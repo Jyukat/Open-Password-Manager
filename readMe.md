@@ -23,7 +23,7 @@ I welcome contributions and suggestions to enhance Open Password Manager. If you
 ## System Requirements
 - Windows XP or later
 
-### Release
+# Release
 CLICK HERE [RELEASE](https://github.com/Jyukat/Open-Password-Manager/releases).
 
 ## Installation
