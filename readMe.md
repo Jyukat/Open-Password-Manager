@@ -23,6 +23,9 @@ I welcome contributions and suggestions to enhance Open Password Manager. If you
 ## System Requirements
 - Windows XP or later
 
+### Release
+CLICK HERE [RELEASE](https://github.com/Jyukat/Open-Password-Manager/releases).
+
 ## Installation
 1. Download the latest version of Open Password Manager from the GitHub repository.
 2. Run the .exe file and follow the on-screen instructions.
