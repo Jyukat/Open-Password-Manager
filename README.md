@@ -1,2 +1,0 @@
-# OPM
-Open Password Manager
