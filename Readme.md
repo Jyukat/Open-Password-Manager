@@ -14,6 +14,7 @@ Open Password Manager has been entirely developed using the AutoIt scripting lan
 
 ## AES-256 Bit Security
 The security of information is a priority. Open Password Manager uses AES-256 bit encryption to protect your stored passwords. AES-256 bit is a widely recognized and utilized encryption algorithm known for its speed and security. Your passwords are encrypted before being stored and can only be decrypted with your master key.
+
 **EDIT: AES-256 Bit encryption is vulnerable to certain attack, so is not 100% safe, feel free to customize OPM with another algorithm**
 
 ## Key Features
