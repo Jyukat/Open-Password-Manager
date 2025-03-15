@@ -50,50 +50,23 @@ If you'd like to contribute code, follow these steps:
 8. **Run the tests:** Ensure that all tests pass.
 9. **Commit your changes:** Commit frequently with clear and concise messages that describe the changes made. Follow a consistent commit style (e.g., [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)).
 10. **Push your branch to your fork:** Push your modified branch to your GitHub repository.
-11. **Create a Pull Request (PR):** From the page of your fork on GitHub, create a new Pull Request to the main branch of the original repository.
 
-## Pull Request Guidelines
-
-When creating a Pull Request, please:
-
-* **Give it a clear and concise title:** Describe the changes made briefly.
-* **Provide a detailed description:** Explain the problem it solves or the feature it adds. Include any additional information that might be helpful to reviewers.
-* **Reference related issues:** If your PR fixes a bug or implements a feature requested in an issue, reference the issue in the body of the PR (e.g., `Fixes #123`, `Implements #456`).
-* **Keep PRs small and focused:** It's easier to review PRs that focus on a single problem or feature.
-* **Be patient:** Reviewing PRs takes time. Be patient and respond to feedback from reviewers.
 
 ## Code Conventions
 
-[You can add the specific code conventions for your project here. For example, you might specify the programming language, style guides (e.g., PEP 8 for Python), linters, and formatters to use.]
+**USE ONLY AUTOIT AS PROGRAMMING LANGUAGE TO MODIFY OPM**
 
 If there aren't any specific conventions defined, try to maintain a consistent style with the existing code.
 
 ## Code Review Process
 
-All Pull Requests will be subject to code review by the project maintainers. The code review process aims to:
-
-* Ensure code quality.
-* Verify that the changes are in line with the project's goals.
-* Provide constructive feedback.
-
-Be open to feedback and willing to make changes to your PR based on reviewer comments.
-
-## Community
-
-We're a welcoming and inclusive community. We encourage you to participate in discussions, ask questions, and help others.
-
-[You can add information about your community communication channels here, such as mailing lists, Slack/Discord channels, forums, etc.]
-
-## Code of Conduct
-
-We expect all contributors to behave in a respectful and constructive manner. We have a [Code of Conduct](LINK_TO_YOUR_CODE_OF_CONDUCT.md) that outlines the standards of behavior for all members of the community. We encourage you to read it and follow it.
+All Pull Requests will be subject to code review by the project maintainers.
 
 ## License
 
-By contributing to this project, you agree that your contributions are subject to the [LICENSE OF YOUR PROJECT](LICENSE).
+By contributing to this project, you agree that your contributions are subject to the [GPL 3.0 LICENSE].
 
 Thanks again for your contributions!
 
 ---
 
-**Note:** Remember to replace the placeholders (such as `[You can add the specific code conventions for your project here...]`, `LINK_TO_YOUR_CODE_OF_CONDUCT.md`, and `LICENSE`) with the specific information for your project. You may also want to add or modify sections based on your needs.
