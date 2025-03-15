@@ -50,23 +50,10 @@ Se desideri contribuire con codice, segui questi passaggi:
 8.  **Esegui i test:** Assicurati che tutti i test passino.
 9.  **Commit delle modifiche:** Esegui commit frequenti con messaggi chiari e concisi che descrivano le modifiche apportate. Segui uno stile di commit coerente (es. [Conventional Commits](https://www.conventionalcommits.org/it/v1.0.0/)).
 10. **Fai push del branch sul tuo fork:** Invia il tuo branch modificato al tuo repository GitHub.
-11. **Crea una Pull Request (PR):** Dalla pagina del tuo fork su GitHub, crea una nuova Pull Request verso il branch principale del repository originale.
-
-## Linee Guida per le Pull Request
-
-Quando crei una Pull Request, ti preghiamo di:
-
-* **Dare un titolo chiaro e conciso:** Descrivi brevemente le modifiche apportate.
-* **Fornire una descrizione dettagliata:** Spiega il problema che risolve o la funzionalità che aggiunge. Includi eventuali informazioni aggiuntive che possano essere utili ai revisori.
-* **Fare riferimento alle issue correlate:** Se la tua PR risolve un bug o implementa una funzionalità richiesta in una issue, fai riferimento all'issue nel corpo della PR (es. `Fixes #123`, `Implements #456`).
-* **Mantenere le PR piccole e focalizzate:** È più facile revisionare PR che si concentrano su un singolo problema o funzionalità.
-* **Essere paziente:** La revisione delle PR richiede tempo. Sii paziente e rispondi ai feedback dei revisori.
 
 ## Convenzioni di Codice
 
-[Qui puoi aggiungere le convenzioni di codice specifiche del tuo progetto. Ad esempio, potresti specificare il linguaggio di programmazione, le guide di stile (es. PEP 8 per Python), i linter e i formatter da utilizzare.]
-
-Se non ci sono convenzioni specifiche definite, cerca di mantenere uno stile coerente con il codice esistente.
+**Per questo progetto bisogna usare solo Autoit v3 come linguaggio di programmazione.**
 
 ## Processo di Revisione del Codice
 
@@ -78,22 +65,10 @@ Tutte le Pull Request saranno soggette a revisione del codice da parte dei manut
 
 Sii aperto al feedback e disposto ad apportare modifiche alla tua PR in base ai commenti dei revisori.
 
-## Comunità
-
-Siamo una comunità accogliente e inclusiva. Ti incoraggiamo a partecipare alle discussioni, a porre domande e ad aiutare gli altri.
-
-[Qui puoi aggiungere informazioni sui canali di comunicazione della tua comunità, come mailing list, canali Slack/Discord, forum, ecc.]
-
-## Codice di Condotta
-
-Ci aspettiamo che tutti i contributori si comportino in modo rispettoso e costruttivo. Adottiamo un [Codice di Condotta](LINK_AL_TUO_CODICE_DI_CONDOTTA.md) che definisce gli standard di comportamento per tutti i membri della comunità. Ti invitiamo a leggerlo e a seguirlo.
-
 ## Licenza
 
-Contribuendo a questo progetto, accetti che le tue contribuzioni siano soggette alla [LICENZA DEL TUO PROGETTO](LICENSE).
+Contribuendo a questo progetto, accetti che le tue contribuzioni siano soggette alla [LICENZA GPL 3.0].
 
 Grazie ancora per il tuo contributo!
 
 ---
-
-**Nota:** Ricorda di sostituire i segnaposto (come `[Qui puoi aggiungere le convenzioni di codice specifiche del tuo progetto...]`, `LINK_AL_TUO_CODICE_DI_CONDOTTA.md`, e `LICENSE`) con le informazioni specifiche del tuo progetto. Potresti anche voler aggiungere o modificare sezioni in base alle tue esigenze.
