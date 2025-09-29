@@ -11,8 +11,6 @@
 #AutoIt3Wrapper_Res_CompanyName=hacktooth
 #AutoIt3Wrapper_Res_LegalCopyright=hacktooth
 #AutoIt3Wrapper_Res_Language=1040
-#AutoIt3Wrapper_Res_Icon_Add=C:\Users\hackt\OneDrive\Desktop\passwordmanager\icon\eye.ico
-#AutoIt3Wrapper_Res_Icon_Add=C:\Users\hackt\OneDrive\Desktop\passwordmanager\icon\copy.ico
 #Au3Stripper_Parameters=/pe /sf /mo /rm
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
@@ -20,8 +18,6 @@
 ; Add extra ICO files to the resources
 ; Use full path of the ico files to be added
 ;~ ‪F:\Autoit\passwordmanager\icon\icon.ico, 301
-;~ ‪F:\Autoit\passwordmanager\icon\copy.ico, 302
-;~ F:\Autoit\passwordmanager\icon\eye.ico, 303
 ; ResNumber is a numeric value used to access the icon: TraySetIcon(@ScriptFullPath, ResNumber)
 ; If no ResNumber is specified, the added icons are numbered from 201 up
 
@@ -814,5 +810,6 @@ Func _esci() ;Esci dal programma
 			_Crypt_Shutdown() ; Shutdown the crypt library.
 			Exit
 	EndSelect
+
 
 EndFunc   ;==>_esci
