@@ -1,17 +1,26 @@
+; ===============================================================================================================================
+;
+; AutoIt v3 - Password manager by Jyukat
+; Modified in 21/11/2025
+;
+; ===============================================================================================================================
+
+#include-once
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _insrec
 ; Description ...: Insert an account on the database using _addrec
 ; Syntax ........: _insrec()
 ; Parameters ....: None
 ; Return values .: None
-; Author ........: Your Name
+; Author ........: Jyukat
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _insRec() ;Inserisce un Account
+Func _insRec()
 
 	$insrec = GUICreate("Add Account", 514, 330, -1, -1, Null, Null, $MainUI)
 	GUISetFont(10, 400, 0, "Segoe UI")
@@ -67,29 +76,29 @@ EndFunc   ;==>_insrec
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _addrec
-; Description ...:
-; Syntax ........: _addrec($account, $uRec, $email, $pRec)
+; Description ...: Add an account in the database
+; Syntax ........: _addrec($account, $user, $email, $pass)
 ; Parameters ....: $account             - string value of account name.
-;                  $uRec                - an unknown value.
-;                  $email               - an unknown value.
-;                  $pRec                - a pointer value.
+;                  $uRec                - an string value.
+;                  $email               - an string value.
+;                  $pRec                - a string value.
 ; Return values .: None
-; Author ........: Your Name
+; Author ........: Jyukat
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _addrec($account, $uRec, $email, $pRec) ;Aggiungi i record e se necessario oscurarli
+Func _addrec($account, $user, $email, $pass) ;Aggiungi i record e se necessario oscurarli
 
 	If $account = "" Then
 		MsgBox(16, "", "Nothing to add...", 1)
 		Return
 	EndIf
 
-	Local $uEncrypted = StringEncrypt(True, $uRec, $key)
-	Local $pEncrypted = StringEncrypt(True, $pRec, $key)
+	Local $uEncrypted = StringEncrypt(True, $user, $key)
+	Local $pEncrypted = StringEncrypt(True, $pass, $key)
 
 	IniWrite($settingfile, $account, "Username", $uEncrypted)
 	IniWrite($settingfile, $account, "Email", $email)
@@ -99,6 +108,19 @@ Func _addrec($account, $uRec, $email, $pRec) ;Aggiungi i record e se necessario 
 
 EndFunc   ;==>_addrec
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _addField
+; Description ...: Add new field in the exists accounts
+; Syntax ........: _addField()
+; Parameters ....:
+; Return values .: None
+; Author ........: Jyukat
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func _addField() ;Aggiungi nuovi records
 
 	$addrecGUI = GUICreate("Add Records", 515, 294, -1, -1, $WS_EX_TOPMOST)
@@ -138,6 +160,19 @@ Func _addField() ;Aggiungi nuovi records
 
 EndFunc   ;==>_addField
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _readrec
+; Description ...: Read the field of a account
+; Syntax ........: _readrec()
+; Parameters ....:
+; Return values .: None
+; Author ........: Jyukat
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func _readrec() ;Leggi records
 
 	$hide = 1
@@ -235,6 +270,19 @@ GUIDelete($ReadRecGUI)
 
 EndFunc   ;==>_readrec
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _remove
+; Description ...: Remove a exist account form the database
+; Syntax ........: _remove($vRem)
+; Parameters ....: $vRem                - a variant value.
+; Return values .: None
+; Author ........: Jyukat
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func _remove($vRem) ;Rimuovi accounts
 
 	If Not IsDeclared("iMsgBoxAnswer") Then Local $iMsgBoxAnswer
@@ -251,6 +299,19 @@ Func _remove($vRem) ;Rimuovi accounts
 
 EndFunc
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _writeField
+; Description ...: Write fields of the account
+; Syntax ........: _writeField()
+; Parameters ....:
+; Return values .: None
+; Author ........: Jyukat
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func _writeField() ;Scrivi records
 
 	Local $vEn1, $vEn2

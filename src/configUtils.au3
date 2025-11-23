@@ -1,4 +1,25 @@
-;~ funzioni file database
+; ===============================================================================================================================
+;
+; AutoIt v3 - Password manager by Jyukat
+; Modified in 21/11/2025
+;
+; ===============================================================================================================================
+
+#include-once
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Import
+; Description ...: Import the configuration file
+; Syntax ........: _Import()
+; Parameters ....:
+; Return values .: Boolean
+; Author ........: Jyukat
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func _Import() ;Importa file config
 
 	; Create a constant variable in Local scope of the message to display in FileOpenDialog
@@ -12,6 +33,7 @@ Func _Import() ;Importa file config
 
 		; Change the working directory (@WorkingDir) back to the location of the script directory as FileOpenDialog sets it to the last accessed folder.
 		FileChangeDir(@ScriptDir)
+		Return False
 	Else
 		; Change the working directory (@WorkingDir) back to the location of the script directory as FileOpenDialog sets it to the last accessed folder.
 		FileChangeDir(@ScriptDir)
@@ -23,11 +45,24 @@ Func _Import() ;Importa file config
 
 		; Display the list of selected files.
 		MsgBox($MB_SYSTEMMODAL, "", "The configuration account file was imported successfully!")
+		Return True
 	EndIf
 EndFunc   ;==>_Import
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Export
+; Description ...: Export the configuration file
+; Syntax ........: _Export()
+; Parameters ....:
+; Return values .: None
+; Author ........: Jyukat
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func _Export() ;Esporta file config
-
 	; Create a constant variable in Local scope of the message to display in FileSaveDialog.
 	Local Const $sMessage = "Choice the file name"
 
@@ -52,17 +87,27 @@ Func _Export() ;Esporta file config
 			$sFileSaveDialog &= ".ini"
 		EndIf
 
-		;Esporta file nella destinazione scelta
 		FileCopy($settingfile, $sFileSaveDialog, $FC_OVERWRITE)
-
 		; Display the saved file.
 		MsgBox($MB_SYSTEMMODAL, "", "You saved the following file:" & @CRLF & $sFileSaveDialog)
 	EndIf
 
 EndFunc
 
-Func _backup();Backup database
-
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _backup
+; Description ...: Create a backup of the configuration file
+; Syntax ........: _backup()
+; Parameters ....: None
+; Return values .: None
+; Author ........: Jyukat
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _backup()
 	; Create a constant variable in Local scope of the message to display in FileSelectFolder.
 	Local Const $sMessage_1 = "Choice where to save the backup file"
 
