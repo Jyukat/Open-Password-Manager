@@ -23,10 +23,9 @@ _Crypt_Startup() ; Initialize the Crypt library, to improve performance
 Opt("TrayMenuMode", 1) ; Enable tray menu
 
 #region Global variables and constants
-Global $login, $username, $user, $masterkey, $nameuser
+Global $login, $user, $masterkey, $username, $avvcheck
 Global $MainUI, $loginUI, $List1, $vListItem, $insrec, $Checkbox1, $Checkbox2, $recName, $recName1
 Global $recValue, $recValue1, $sh, $hide, $ReadRecGUI, $sAccount, $sEmail, $sUser, $sPass, $attdisatt
-Global $avvcheck ;$key
 
 Global $iAlgorithm = $CALG_AES_256
 
@@ -74,7 +73,7 @@ $loginUI = GUICreate("Sign In", 250, 290, -1, -1)
 GUISetFont(10, 400, 0, "Segoe UI")
 
 $Label1		 =	 GUICtrlCreateLabel("User", 16, 24, 31, 21)
-$username	 =	 GUICtrlCreateInput("", 16, 48, 217, 25, BitOR($GUI_SS_DEFAULT_INPUT, $ES_CENTER))
+$in_username	 =	 GUICtrlCreateInput("", 16, 48, 217, 25, BitOR($GUI_SS_DEFAULT_INPUT, $ES_CENTER))
 GUICtrlSetFont(-1, 10, 400, 2, "Segoe UI")
 
 $Label2		 =	 GUICtrlCreateLabel("Master Password", 16, 88, 105, 21)
@@ -98,14 +97,15 @@ While 1
 		Case $GUI_EVENT_CLOSE
 			_esci()
 		Case $sign ;$sign
-			_checkreg(GUICtrlRead($username), GUICtrlRead($masterpass))
+			_checkreg(GUICtrlRead($in_username), GUICtrlRead($masterpass))
+			$masterpass = Null
+
 			If @error = "2" Then
 				MsgBox(262160, $name, "Incorrect User and Password, Retry please...")
 			ElseIf @error = "1" Then
 				MsgBox(16, "Errore", "Insert User and Password.")
 			Else
-				$nameuser = GUICtrlRead($username)
-;~ 				$key = GUICtrlRead($masterpass)
+				$username = GUICtrlRead($in_username)
 				GUIDelete($loginUI)
 				ExitLoop
 			EndIf
@@ -132,7 +132,7 @@ _winmain()
 ;~ funzioni interfaccia
 Func _winmain() ;Interfaccia principale
 
-	$MainUI		 =	 GUICreate("Welcome " & $nameuser, 350, 420, -1, -1)
+	$MainUI		 =	 GUICreate("Welcome " & $username, 350, 420, -1, -1)
 	$Menu		 =	 GUICtrlCreateMenu("&Menù")
 	$new		 =	 GUICtrlCreateMenuItem("Add account" & @TAB & "Ctrl+N", $Menu)
 	$passGen	 =	 GUICtrlCreateMenuItem("Passoword Generator" & @TAB & "Ctrl+1", $Menu)

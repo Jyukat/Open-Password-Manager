@@ -24,24 +24,21 @@
 ; ===============================================================================================================================
 Func _checkreg($iUser, $iPass)
 
-	Local $vReturn = ""
+	Local $vReturn
 
-	If $iUser == "" And $iPass == "" Then
+	If $iUser == "" Or $iPass == "" Then
 		SetError(1)
 		Return $vReturn
 	EndIf
 
 	;Leggo settings.ini Sezione User
-	Local $uRead	 	=	 IniRead($settingfile, "User", "username", "Default Value")
+	Local $userINI	 	=	 IniRead($settingfile, "User", "username", "Default Value")
 	Local $mkRead		=	 IniRead($settingfile, "User", "key", "Default Value")
 	Local $uEncrypted	=	 StringEncrypt(True, $iUser, $iPass)
-
-
-
-	Local $mkEncrypted	=	 _checkhashdata($iPass) ;Local $mkEncrypted	= StringEncrypt(True, $iPass, $iPass)
+	Local $mkEncrypted	=	 _checkhash($iPass)
 
 	;checking data
-	If $uRead <> $uEncrypted Or $mkEncrypted = False Then
+	If $userINI <> $uEncrypted Or $mkEncrypted = False Then
 		$vReturn = False
 		SetError(2)
 	Else
@@ -136,7 +133,7 @@ Func _writereg($user, $masterpass)
 		Return
 	EndIf
 
-	Local $key = _Crypt_DeriveKey($key, $CALG_AES_256)
+	Local $key = _Crypt_DeriveKey($masterpass, $CALG_AES_256)
 	Local $hkey = _Crypt_HashData($key, $CALG_SHA_256)
 
 	Local $userEncrypted = StringEncrypt(True, $user, $hMasterPassword)

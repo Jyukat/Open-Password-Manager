@@ -9,9 +9,9 @@
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _checkhashdata
-; Description ...: Compare two hash string data using SHA-512 bit
+; Description ...: Compare two hash string data using SHA-256 bit
 ; Syntax ........: _checkhashdata($skey)
-; Parameters ....: $skey                - a string value.
+; Parameters ....: $hash                - a string value.
 ; Return values .: None
 ; Author ........: Jyukat
 ; Modified ......:
@@ -20,11 +20,13 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _checkhashdata($skey)
-	Local $vData = ""
+Func _checkhash($hash)
+	Local $vData
 	Local $bPasswordHash = IniRead($settingfile, "User", "key", "default")
 
-	If _Crypt_DeriveKey($skey, $CALG_SHA_512) = $bPasswordHash Then
+	_Crypt_DeriveKey($hkey, $CALG_SHA_256)
+
+	If _Crypt_DeriveKey($hkey, $CALG_SHA_256) = $bPasswordHash Then
 		$vData = True
 	Else
 		$vData = False
