@@ -22,23 +22,19 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _checkreg($iUser, $iPass)
+Func _checkreg($User, $Password)
 
 	Local $vReturn
+	Local $check_hash = _checkhash($Password)
 
-	If $iUser == "" Or $iPass == "" Then
-		SetError(1)
-		Return $vReturn
-	EndIf
-
-	;Leggo settings.ini Sezione User
-	Local $userINI	 	=	 IniRead($settingfile, "User", "username", "Default Value")
-	Local $mkRead		=	 IniRead($settingfile, "User", "key", "Default Value")
-	Local $uEncrypted	=	 StringEncrypt(True, $iUser, $iPass)
-	Local $mkEncrypted	=	 _checkhash($iPass)
+	;Leggo Sezione User
+	Local $userINI	 		=	 IniRead($settingfile, "User", "username", "")
+	Local $master_pass_INI	=	 IniRead($settingfile, "User", "key", "")
+	Local $salt_INI			=	 IniRead($settingfile, "User", "salt, "")
+	Local $userEncrypted	=	 StringEncrypt(True, $User, $Pass)
 
 	;checking data
-	If $userINI <> $uEncrypted Or $mkEncrypted = False Then
+	If $userINI <> $userEncrypted Or $check_hash = False Then
 		$vReturn = False
 		SetError(2)
 	Else
@@ -50,9 +46,9 @@ Func _checkreg($iUser, $iPass)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _reg
+; Name ..........: _signIn
 ; Description ...: Perform a registration routine for the user
-; Syntax ........: _reg()
+; Syntax ........: _signIn()
 ; Parameters ....: None
 ; Return values .: None
 ; Author ........: Jyukat
@@ -62,7 +58,7 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _reg()
+Func _signIn()
 
 $regGUI = GUICreate("Registration", 298, 277, -1, -1)
 GUISetFont(8, 400, 0, "Segoe UI")
@@ -92,32 +88,32 @@ While 1
 	$nMsg = GUIGetMsg()
 	Switch $nMsg
 		Case $GUI_EVENT_CLOSE, $btn_back
-			GUISwitch($login)
 			ExitLoop
+
 		Case $btn_register
 			_writereg(GUICtrlRead($in_user), GUICtrlRead($in_masterpass))
 			If @error Then
-				MsgBox(16,"-.-","Insert User and Password")
+				MsgBox(16,"Error","Insert User and Password")
 			Else
-				MsgBox(64,$name,"Registration Complete!")
-				GUISwitch($login)
+				MsgBox(64,"Success","Registration Complete!")
 				ExitLoop
 			EndIf
+
 		Case $importa
-			_Import()
-			_reboot()
+			If _Import() Then _reboot()
 	EndSwitch
 WEnd
 
 GUIDelete($regGUI)
+GUISwitch($login)
 
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _writereg
 ; Description ...: Write in the disk the configuration file
-; Syntax ........: _writereg()
-; Parameters ....: None
+; Syntax ........: _writereg($username, $masterpass)
+; Parameters ....: $username, $masterpass - String values
 ; Return values .: None
 ; Author ........: Jyukat
 ; Modified ......:
@@ -126,40 +122,44 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _writereg($user, $masterpass)
+Func _writereg($username, $masterpass)
 
-	If $user == "" And $masterpass == "" Then
+	If $username == "" And $masterpass == "" Then
 		SetError(1)
 		Return
 	EndIf
 
-	Local $key = _Crypt_DeriveKey($masterpass, $CALG_AES_256)
-	Local $hkey = _Crypt_HashData($key, $CALG_SHA_256)
+	; Genera un salt casuale (16 bytes)
+	Local $tSalt = DllStructCreate("byte[16]")
+	_Crypt_GenRandom($tSalt, DllStructGetSize($tSalt))
+	Local $salt = DllStructGetData($tSalt, 1)
 
-	Local $userEncrypted = StringEncrypt(True, $user, $hMasterPassword)
+	; Crea hash della master password + salt per verifica
+	Local $hash_verify 		 = _Crypt_HashData($masterpass & $salt, $CALG_SHA_256)
+	Local $key 				 = _Crypt_DeriveKey($masterpass & $salt, $CALG_AES_256)
+	Local $encrypted_user	 = _Crypt_EncryptData($username, $key, $CALG_USERKEY)
 
-	;Local $uEncrypted = StringEncrypt(True, $user, $key)
-	;Local $mkEncrypted = _Crypt_HashData($masterkey, $CALG_SHA_512)
+	;Create file and write data
+	IniWrite($settingfile, "User", "username", $encrypted_user)
+	IniWrite($settingfile, "User", "hash"	 , $hash_verify)
+	IniWrite($settingfile, "User", "salt"	 , $salt)
 
-	;Create file setting.ini
-	If Not _FileCreate($settingfile) Then
-		MsgBox($MB_SYSTEMMODAL, "Error", " Error Creating/Resetting.      error:" & @error)
-	EndIf
-
-	;Write Data
-	IniWrite($settingfile, "User", "username", $userEncrypted)
-	IniWrite($settingfile, "User", "key", $hMasterPassword)
-
-	MsgBox($MB_SYSTEMMODAL, "WARNING", "Do not forget this info, print it or write it or remember it in mind." & @CRLF & _
-							"You will have no wat to access your passwords forgetting user and master password." & @CRLF & _
-							"User: " & $user & @CRLF & _
-							"Master Password: " & $masterkey)
+	MsgBox($MB_SYSTEMMODAL, "WARNING" & @CRLF & _
+							"Do not forget this info, print it or write it somewhere." & @CRLF & _
+							"You will have no way to access your passwords forgetting User and Master Password." & @CRLF & _
+							"--------------------------------------------------------" & @CRLF & _
+							"User: " & $username & @CRLF & _
+							"Master Password: " & $masterpass)
 
 	;Destroy data
-	$user				= Null
-	$masterkey			= Null
-	$userEncrypted		= Null
-	$hMasterPassword	= Null
+	$tSalt 				= Null
+	$username			= Null
+	$masterpass			= Null
+	$encrypted_user		= Null
+	$hash_verify		= Null
+	$salt 				= Null
+
+	_Crypt_DestroyKey($key)
 
 EndFunc
 

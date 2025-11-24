@@ -20,13 +20,15 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _checkhash($hash)
+Func _checkhash($key)
 	Local $vData
-	Local $bPasswordHash = IniRead($settingfile, "User", "key", "default")
+	Local $hash_ini = IniRead($settingfile, "User", "key", "default")
+	Local $salt_ini = IniRead($settingfile, "User", "salt", "default")
 
-	_Crypt_DeriveKey($hkey, $CALG_SHA_256)
+	$hKey = _Crypt_DeriveKey($key, $CALG_AES_256)
+	$hash = _Crypt_HashData($hKey, $CALG_SHA_256)
 
-	If _Crypt_DeriveKey($hkey, $CALG_SHA_256) = $bPasswordHash Then
+	If  Then
 		$vData = True
 	Else
 		$vData = False
@@ -52,18 +54,18 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func StringEncrypt($bEncrypt, $sData, $sPassword)
-	Local $vReturn = ""
+Func StringEncrypt($bEncrypt, $sData, $hkey)
+	Local $data = ""
 
 	If $sData == "" Then Return
 
 	If $bEncrypt Then
-		$vReturn = _Crypt_EncryptData($sData, $sPassword, $CALG_USERKEY)
+		$data = _Crypt_EncryptData($sData, $hkey, $CALG_USERKEY)
 	Else
-		$vReturn = BinaryToString(_Crypt_DecryptData($sData, $sPassword, $CALG_USERKEY))
+		$data = BinaryToString(_Crypt_DecryptData($sData, $hkey, $CALG_USERKEY))
 	EndIf
-	_Crypt_DestroyKey($hKey)
-	Return $vReturn
+
+	Return $data
 EndFunc   ;==>StringEncrypt
 
 ; #FUNCTION# ====================================================================================================================

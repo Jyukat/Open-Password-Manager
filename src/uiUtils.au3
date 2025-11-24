@@ -118,13 +118,13 @@ $avv	 =	 GUICtrlCreateGroup("Startup", 16, 16, 521, 81, BitOR($GUI_SS_DEFAULT_GR
 $avvLab	 =	 GUICtrlCreateLabel("Add to Windows Startup", 24, 48, 189, 25)
 GUICtrlSetColor(-1, 0x0066CC)
 
-$avvcheck = GUICtrlCreateCheckbox("", 224, 48, 17, 25)
+$on_start = GUICtrlCreateCheckbox("", 224, 48, 17, 25)
 GUICtrlSetTip(-1, "Yes / No")
 
 $attdisatt = GUICtrlCreateLabel("", 256, 48, 78, 25)
 
 	If FileExists(@StartupDir &"\"& $name &".lnk") Then
-		GUICtrlSetState($avvcheck, $GUI_CHECKED)
+		GUICtrlSetState($on_start, $GUI_CHECKED)
 		GUICtrlSetData($attdisatt,"Activated")
 		GUICtrlSetColor($attdisatt, 0x008000)
 	Else
@@ -159,8 +159,8 @@ While 1
 			_reboot()
 		Case $export
 			_Export()
-		Case $avvcheck
-			If AddToStartup($avvcheck) Then
+		Case $on_start
+			If AddToStartup($on_start) Then
 				GUICtrlSetData($attdisatt, "Activated")
 				GUICtrlSetColor($attdisatt, 0x008000)
 			Else
@@ -195,7 +195,7 @@ EndFunc   ;==>_IsChecked
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _about
-; Description ...: About UI
+; Description ...: About Dialog
 ; Syntax ........: _about()
 ; Parameters ....:
 ; Return values .: None

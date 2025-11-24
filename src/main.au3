@@ -23,9 +23,9 @@ _Crypt_Startup() ; Initialize the Crypt library, to improve performance
 Opt("TrayMenuMode", 1) ; Enable tray menu
 
 #region Global variables and constants
-Global $login, $user, $masterkey, $username, $avvcheck
-Global $MainUI, $loginUI, $List1, $vListItem, $insrec, $Checkbox1, $Checkbox2, $recName, $recName1
-Global $recValue, $recValue1, $sh, $hide, $ReadRecGUI, $sAccount, $sEmail, $sUser, $sPass, $attdisatt
+Global $login, $user, $masterkey, $username
+Global $MainUI, $List1, $vListItem, $insrec, $Checkbox1, $Checkbox2, $recName, $recName1
+Global $recValue, $recValue1, $sh, $hide, $ReadRecGUI, $sAccount, $sEmail, $sUser, $sPass
 
 Global $iAlgorithm = $CALG_AES_256
 
@@ -40,7 +40,8 @@ Global $restore 	= 	TrayCreateItem("Show window")
 Global $reboot 		= 	TrayCreateItem("Restart application")
 Global $exititem 	= 	TrayCreateItem("Exit")
 
-Global Enum $NARRAY, $FIELD1, $FIELD2, $VALUE1, $VALUE2 ;~ array size, first field, second field, first value, second value
+;~ array size, first field, second field, first value, second value
+Global Enum $NARRAY, $FIELD1, $FIELD2, $VALUE1, $VALUE2
 Global $aRead[5]
 #EndRegion
 
@@ -69,22 +70,22 @@ Do
 	EndIf
 Until False
 
-$loginUI = GUICreate("Sign In", 250, 290, -1, -1)
-GUISetFont(10, 400, 0, "Segoe UI")
+$loginUI = GUICreate("Log In", 250, 290, -1, -1)
+;GUISetFont(10, 400, 0, "Segoe UI")
 
-$Label1		 =	 GUICtrlCreateLabel("User", 16, 24, 31, 21)
+$label_user		 =	 GUICtrlCreateLabel("User", 16, 24, 31, 21)
 $in_username	 =	 GUICtrlCreateInput("", 16, 48, 217, 25, BitOR($GUI_SS_DEFAULT_INPUT, $ES_CENTER))
-GUICtrlSetFont(-1, 10, 400, 2, "Segoe UI")
+;GUICtrlSetFont($label_user, 10, 400, 2, "Segoe UI")
 
-$Label2		 =	 GUICtrlCreateLabel("Master Password", 16, 88, 105, 21)
-$masterpass	 =	 GUICtrlCreateInput("", 16, 112, 217, 25, BitOR($GUI_SS_DEFAULT_INPUT, $ES_CENTER, $ES_PASSWORD))
-GUICtrlSetFont(-1, 10, 400, 2, "Segoe UI")
+$label_masterPass	 =	 GUICtrlCreateLabel("Master Password", 16, 88, 105, 21)
+$in_masterpass	 =	 GUICtrlCreateInput("", 16, 112, 217, 25, BitOR($GUI_SS_DEFAULT_INPUT, $ES_CENTER, $ES_PASSWORD))
+;GUICtrlSetFont($label_masterPass, 10, 400, 2, "Segoe UI")
 
-$sign		 =	 GUICtrlCreateButton("Sign In", 16, 168, 217, 25, $BS_DEFPUSHBUTTON)
-$reg		 =	 GUICtrlCreateLabel("New user? register an account now", 17, 208, 217, 21, $SS_CENTER)
+$bnt_sign		 =	 GUICtrlCreateButton("Sign In", 16, 168, 217, 25, $BS_DEFPUSHBUTTON)
+$Label_reg		 =	 GUICtrlCreateLabel("New user? register an account now", 17, 208, 217, 21, $SS_CENTER)
 
 GUICtrlSetCursor	(-1, 0)
-GUICtrlSetFont		(-1, 10, 400, 4, "Segoe UI")
+;GUICtrlSetFont		(-1, 10, 400, 4, "Segoe UI")
 GUICtrlSetColor		(-1, 0x0066CC)
 
 $btnabout	 =	 GUICtrlCreateButton("About", 16, 248, 217, 25)
@@ -96,21 +97,29 @@ While 1
 	Switch $nMsg
 		Case $GUI_EVENT_CLOSE
 			_esci()
-		Case $sign ;$sign
-			_checkreg(GUICtrlRead($in_username), GUICtrlRead($masterpass))
-			$masterpass = Null
+		Case $bnt_sign
+
+			$username = GUICtrlRead($in_username)
+			$masterpassword = GUICtrlRead($in_masterpass)
+
+			If $iUser == "" Or $iPass == "" Then
+				SetError(1)
+			Return $vReturn
+			EndIf
+
+			_checkreg(GUICtrlRead($in_username), GUICtrlRead($in_masterpass))
+			$in_masterpass = Null
 
 			If @error = "2" Then
 				MsgBox(262160, $name, "Incorrect User and Password, Retry please...")
 			ElseIf @error = "1" Then
-				MsgBox(16, "Errore", "Insert User and Password.")
+				;errore no pass no user insered
 			Else
-				$username = GUICtrlRead($in_username)
 				GUIDelete($loginUI)
 				ExitLoop
 			EndIf
-		Case $reg
-			_reg()
+		Case $bnt_sign
+			_signIn()
 		Case $btnabout
 			_about()
 		Local $msg = TrayGetMsg()
@@ -126,11 +135,11 @@ While 1
 WEnd
 
 GUIDelete($loginUI)
-_winmain()
+WinMain()
 
 
 ;~ funzioni interfaccia
-Func _winmain() ;Interfaccia principale
+Func WinMain() ;Interfaccia principale
 
 	$MainUI		 =	 GUICreate("Welcome " & $username, 350, 420, -1, -1)
 	$Menu		 =	 GUICtrlCreateMenu("&Menù")

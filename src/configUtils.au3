@@ -29,7 +29,7 @@ Func _Import() ;Importa file config
 	Local $sFileOpenDialog = FileOpenDialog($sMess, @DocumentsCommonDir & "\", "config (*.dat;*.ini)", $FD_FILEMUSTEXIST)
 	If @error Then
 		; Display the error message.
-		MsgBox($MB_SYSTEMMODAL, "", "No file selected!")
+		MsgBox($MB_SYSTEMMODAL, "Error", "No file selected!")
 
 		; Change the working directory (@WorkingDir) back to the location of the script directory as FileOpenDialog sets it to the last accessed folder.
 		FileChangeDir(@ScriptDir)
@@ -44,7 +44,7 @@ Func _Import() ;Importa file config
 		FileCopy($sFileOpenDialog, $settingfile, $FC_OVERWRITE + $FC_CREATEPATH)
 
 		; Display the list of selected files.
-		MsgBox($MB_SYSTEMMODAL, "", "The configuration account file was imported successfully!")
+		MsgBox($MB_SYSTEMMODAL, "Success", "The configuration account file was imported successfully!")
 		Return True
 	EndIf
 EndFunc   ;==>_Import
