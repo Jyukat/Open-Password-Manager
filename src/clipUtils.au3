@@ -21,7 +21,7 @@
 ; Example .......: No
 ; ===============================================================================================================================
 Func _clippa($field) ; Copy a password in the clipboard
-	ClipPut(StringEncrypt(False, $field, $key))
+	ClipPut(StringEncrypt(False, $field, $g_hKey))
 	AdlibRegister(_resetclip, 10000)
 EndFunc
 

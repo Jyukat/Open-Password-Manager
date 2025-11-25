@@ -23,26 +23,14 @@
 ; Example .......: No
 ; ===============================================================================================================================
 Func _checkreg($User, $Password)
-
-	Local $vReturn
-	Local $check_hash = _checkhash($Password)
-
 	;Leggo Sezione User
-	Local $userINI	 		=	 IniRead($settingfile, "User", "username", "")
-	Local $master_pass_INI	=	 IniRead($settingfile, "User", "key", "")
-	Local $salt_INI			=	 IniRead($settingfile, "User", "salt, "")
-	Local $userEncrypted	=	 StringEncrypt(True, $User, $Pass)
+	Local $stored_user	=	 IniRead($settingfile, "User", "username", "")
+	Local $stored_hash	=	 IniRead($settingfile, "User", "hash"	 , "")
+	Local $stored_salt	=	 IniRead($settingfile, "User", "salt"	 , "")
 
-	;checking data
-	If $userINI <> $userEncrypted Or $check_hash = False Then
-		$vReturn = False
-		SetError(2)
-	Else
-		$vReturn = True
-	EndIf
-
-	Return $vReturn
-
+	;Check hash
+	Local $result 	= 	 _checkhash($Password, $stored_hash, $stored_salt)
+	Return $result
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
@@ -105,7 +93,7 @@ While 1
 WEnd
 
 GUIDelete($regGUI)
-GUISwitch($login)
+GUISwitch($loginUI)
 
 EndFunc
 
@@ -144,8 +132,7 @@ Func _writereg($username, $masterpass)
 	IniWrite($settingfile, "User", "hash"	 , $hash_verify)
 	IniWrite($settingfile, "User", "salt"	 , $salt)
 
-	MsgBox($MB_SYSTEMMODAL, "WARNING" & @CRLF & _
-							"Do not forget this info, print it or write it somewhere." & @CRLF & _
+	MsgBox($MB_SYSTEMMODAL, "WARNING", "Do not forget this info, print it or write it somewhere." & @CRLF & _
 							"You will have no way to access your passwords forgetting User and Master Password." & @CRLF & _
 							"--------------------------------------------------------" & @CRLF & _
 							"User: " & $username & @CRLF & _

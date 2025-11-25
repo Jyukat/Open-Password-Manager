@@ -46,7 +46,7 @@ Func _insRec()
 	GUICtrlSetColor(-1, 0x0066CC)
 
 	$sPass = GUICtrlCreateInput("", 160, 192, 305, 25, BitOR($GUI_SS_DEFAULT_INPUT, $ES_PASSWORD))
-	$annulla = GUICtrlCreateButton("Cancel", 336, 264, 129, 33)
+	$btn_cancel = GUICtrlCreateButton("Cancel", 336, 264, 129, 33)
 	$addrecs = GUICtrlCreateButton("Add Account", 192, 264, 129, 33)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
 
@@ -59,18 +59,18 @@ Func _insRec()
 	While 1
 		$nMsg = GUIGetMsg()
 		Switch $nMsg
-			Case $GUI_EVENT_CLOSE, $annulla
-				GUIDelete($insrec)
-				GUISwitch($MainUI)
+			Case $GUI_EVENT_CLOSE, $btn_cancel
 				ExitLoop
+
 			Case $addrecs
 				_addrec(GUICtrlRead($sAccount), GUICtrlRead($sUser), GUICtrlRead($sEmail), GUICtrlRead($sPass))
 				_updategui()
-				GUIDelete($insrec)
-				GUISwitch($MainUI)
 				ExitLoop
 		EndSwitch
 	WEnd
+
+GUIDelete($insrec)
+GUISwitch($MainUI)
 
 EndFunc   ;==>_insrec
 
@@ -93,18 +93,18 @@ EndFunc   ;==>_insrec
 Func _addrec($account, $user, $email, $pass) ;Aggiungi i record e se necessario oscurarli
 
 	If $account = "" Then
-		MsgBox(16, "", "Nothing to add...", 1)
+		MsgBox(16, "Error", "Nothing to add...", 1)
 		Return
 	EndIf
 
-	Local $uEncrypted = StringEncrypt(True, $user, $key)
-	Local $pEncrypted = StringEncrypt(True, $pass, $key)
+	Local $uEncrypted = StringEncrypt(True, $user, $g_hKey)
+	Local $pEncrypted = StringEncrypt(True, $pass, $g_hKey)
 
 	IniWrite($settingfile, $account, "Username", $uEncrypted)
 	IniWrite($settingfile, $account, "Email", $email)
 	IniWrite($settingfile, $account, "Password", $pEncrypted)
 
-	MsgBox(64, "Nice", "Record saved successfully!")
+	MsgBox(64, "Success", "Record saved successfully!")
 
 EndFunc   ;==>_addrec
 
@@ -125,13 +125,13 @@ Func _addField() ;Aggiungi nuovi records
 
 	$addrecGUI = GUICreate("Add Records", 515, 294, -1, -1, $WS_EX_TOPMOST)
 	$recLabel1 = GUICtrlCreateLabel("Record #1", 16, 16, 72, 25)
-	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
+;~ 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
 
 	$recName	 =	 GUICtrlCreateInput("Insert the record name", 16, 48, 481, 21)
 	$recValue	 =	 GUICtrlCreateInput("Insert the record", 16, 80, 481, 21)
 	$recLabel2	 =	 GUICtrlCreateLabel("Record #2", 16, 120, 72, 25)
-	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
+;~ 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
 
 	$recName1	 =	 GUICtrlCreateInput("Insert the record name", 16, 152, 481, 21)
@@ -147,16 +147,16 @@ Func _addField() ;Aggiungi nuovi records
 		$nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE, $cancelButton1
-				GUIDelete($addrecGUI)
-				GUISwitch($ReadRecGUI)
 				ExitLoop
+
 			Case $okButton
 				_writeField()
-				GUIDelete($addrecGUI)
-				GUISwitch($ReadRecGUI)
 				ExitLoop
 		EndSwitch
 	WEnd
+
+GUIDelete($addrecGUI)
+GUISwitch($ReadRecGUI)
 
 EndFunc   ;==>_addField
 
@@ -209,7 +209,7 @@ Func _readrec() ;Leggi records
 		For $i = 1 To $dNum
 			$iPosition = StringInStr($aReadSect[$i][1], "0x")
 			If $iPosition = 1 Then
-				$aReadSect[$i][1] = StringEncrypt(False, $aReadSect[$i][1], $key)
+				$aReadSect[$i][1] = StringEncrypt(False, $aReadSect[$i][1], $g_hKey)
 			EndIf
 		Next
 		$sh = 0
@@ -221,7 +221,7 @@ Func _readrec() ;Leggi records
 	;Ridimensionamento GUI in base alla quantità di record esistenti
 	For $i = 1 To $dNum
 		$aLabel[$i] = GUICtrlCreateLabel(($aReadSect[$i][0]), $left, $top1, 489, 24)
-		GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
+;~ 		GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 		GUICtrlSetColor(-1, 0x0066CC)
 		$top1 += 24
 		$aInput[$i] = GUICtrlCreateInput(($aReadSect[$i][1]), $left, $top1, 489, 21)
@@ -244,29 +244,32 @@ Func _readrec() ;Leggi records
 		$nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE, $cancelButton
-				GUISwitch($MainUI)
 				ExitLoop
+
 			Case $copyToClip
 				_clippa($aReadSect[3][1])
 				TrayTip($name, "Password copied!", 1)
+
 			Case $addNewField
 				_addField()
 				GUISetState(@SW_HIDE, $ReadRecGUI)
 				_readrec() ;Aggiorno la GUI per visualizzare le nuove voci
 				ExitLoop
+
 			Case $show
 				If $hide = 1 Then $sh = 1
 				GUISetState(@SW_HIDE, $ReadRecGUI)
 				_readrec() ;Update GUI
 				ExitLoop
+
 			Case $remButton
 				_remove($vListItem)
-				GUISwitch($MainUI)
 				ExitLoop
 		EndSwitch
 	WEnd
 
 GUIDelete($ReadRecGUI)
+GUISwitch($MainUI)
 
 EndFunc   ;==>_readrec
 
@@ -333,7 +336,7 @@ Func _writeField() ;Scrivi records
 
 	;Controllo se devo criptare il primo valore altrimenti lo scrivo in chiaro
 	If _IsChecked($Checkbox1) Then
-		$vEn1 = StringEncrypt(True, $aRead[$VALUE1], $key)
+		$vEn1 = StringEncrypt(True, $aRead[$VALUE1], $g_hKey)
 		IniWrite($settingfile, $vListItem, $aRead[$FIELD1], $vEn1)
 
 	Else
@@ -354,7 +357,7 @@ Func _writeField() ;Scrivi records
 
 	;Controllo se devo criptare il secondo valore altrimenti lo scrivo in chiaro
 	If _IsChecked($Checkbox2) Then
-		$vEn2 = StringEncrypt(True, $aRead[$VALUE2], $key)
+		$vEn2 = StringEncrypt(True, $aRead[$VALUE2], $g_hKey)
 		IniWrite($settingfile, $vListItem, $aRead[$FIELD2], $vEn2)
 
 	Else

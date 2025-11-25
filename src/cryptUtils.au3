@@ -11,8 +11,8 @@
 ; Name ..........: _checkhashdata
 ; Description ...: Compare two hash string data using SHA-256 bit
 ; Syntax ........: _checkhashdata($skey)
-; Parameters ....: $hash                - a string value.
-; Return values .: None
+; Parameters ....: $pass, $hash_ini, $salt_ini   - a string values.
+; Return values .: $result                       - a boolean value.
 ; Author ........: Jyukat
 ; Modified ......:
 ; Remarks .......:
@@ -20,23 +20,18 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _checkhash($key)
-	Local $vData
-	Local $hash_ini = IniRead($settingfile, "User", "key", "default")
-	Local $salt_ini = IniRead($settingfile, "User", "salt", "default")
+Func _checkhash($pass, $hash_ini, $salt_ini)
+	Local $result
 
-	$hKey = _Crypt_DeriveKey($key, $CALG_AES_256)
-	$hash = _Crypt_HashData($hKey, $CALG_SHA_256)
+	$hash = _Crypt_HashData($pass & $salt_ini, $CALG_SHA_256)
 
-	If  Then
-		$vData = True
+	If $hash = $hash_ini Then
+		$result = True
 	Else
-		$vData = False
+		$result = False
 	EndIf
 
-	_Crypt_DestroyKey($hKey)
-
-	Return $vData
+	Return $result
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
@@ -46,7 +41,7 @@ EndFunc
 ; Parameters ....: $bEncrypt            - a boolean value: True Encrypt, False Decrypt,
 ;                  $sData               - a string value.
 ;                  $sPassword           - a string value.
-; Return values .: None
+; Return values .: $data 				- a string value.
 ; Author ........: Jyukat
 ; Modified ......:
 ; Remarks .......:
@@ -84,7 +79,7 @@ EndFunc   ;==>StringEncrypt
 Func _RandomString($iLength = Default)
 	If $iLength = Default Then $iLength = 8
     Local $sResult = ""
-    Local $sChars = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>()=.;_-+$!?@°#/"
+    Local $sChars = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>()=.;_-+$!?@#/"
     For $i = 1 To $iLength
         $sResult &= StringMid($sChars, Random(1, StringLen($sChars), 1), 1)
     Next
