@@ -22,7 +22,6 @@
 
 
 _Crypt_Startup() ; Initialize the Crypt library, to improve performance
-_GDIPlus_Startup()
 
 
 Opt("TrayMenuMode", 1) ; Enable tray menu
