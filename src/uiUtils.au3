@@ -52,9 +52,9 @@ EndFunc
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _updategui
-; Description ...: Update Main window to update the account list
-; Syntax ........: _updategui()
+; Name ..........: UpdateList
+; Description ...: Update the main account list
+; Syntax ........: UpdateList()
 ; Parameters ....:
 ; Return values .: None
 ; Author ........: Jyukat
@@ -64,14 +64,10 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _updategui() ;Aggiorna la GUI principale
+Func UpdateList() ;Aggiorna la GUI principale
 
-	;Flush lista
+	;Flush list
 	GUICtrlSetData($List1, "")
-	GUICtrlSetData($sAccount, "")
-	GUICtrlSetData($sEmail, "")
-	GUICtrlSetData($sUser, "")
-	GUICtrlSetData($sPass, "")
 
 	Local $aArray = IniReadSectionNames($settingfile)
 	If Not @error Then

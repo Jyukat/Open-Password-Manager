@@ -8,9 +8,9 @@
 #include-once
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _insrec
+; Name ..........: NewAccountUI
 ; Description ...: Insert an account on the database using _addrec
-; Syntax ........: _insrec()
+; Syntax ........: NewAccountUI()
 ; Parameters ....: None
 ; Return values .: None
 ; Author ........: Jyukat
@@ -20,12 +20,11 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _insRec()
-
-	$insrec = GUICreate("Add Account", 514, 330, -1, -1, Null, Null, $MainUI)
+Func NewAccountUI()
+	$insrec = GUICreate("New Account", 514, 330, -1, -1, Null, Null, $MainUI)
 	GUISetFont(10, 400, 0, "Segoe UI")
 
-	$Group1 = GUICtrlCreateGroup("New account", 16, 8, 481, 305)
+	$Group1 = GUICtrlCreateGroup("Account Details", 16, 8, 481, 305)
 	$Label10 = GUICtrlCreateLabel("Account name :", 48, 48, 110, 25)
 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
@@ -40,14 +39,14 @@ Func _insRec()
 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
 
-	$sUser = GUICtrlCreateInput("(optional)", 160, 144, 305, 25)
+	$sUser = GUICtrlCreateInput("", 160, 144, 305, 25)
 	$Label13 = GUICtrlCreateLabel("Password :", 81, 192, 78, 25)
 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
 
 	$sPass = GUICtrlCreateInput("", 160, 192, 305, 25, BitOR($GUI_SS_DEFAULT_INPUT, $ES_PASSWORD))
 	$btn_cancel = GUICtrlCreateButton("Cancel", 336, 264, 129, 33)
-	$addrecs = GUICtrlCreateButton("Add Account", 192, 264, 129, 33)
+	$btn_confirm = GUICtrlCreateButton("Confirm", 192, 264, 129, 33)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
 
 	$tip = GUICtrlCreateLabel("To create other records you must first register these required fields.", 44, 232, 440, 25)
@@ -62,9 +61,9 @@ Func _insRec()
 			Case $GUI_EVENT_CLOSE, $btn_cancel
 				ExitLoop
 
-			Case $addrecs
-				_addrec(GUICtrlRead($sAccount), GUICtrlRead($sUser), GUICtrlRead($sEmail), GUICtrlRead($sPass))
-				_updategui()
+			Case $btn_confirm
+				AddAccount(GUICtrlRead($sAccount), GUICtrlRead($sUser), GUICtrlRead($sEmail), GUICtrlRead($sPass))
+				UpdateList()
 				ExitLoop
 		EndSwitch
 	WEnd
@@ -75,9 +74,9 @@ GUISwitch($MainUI)
 EndFunc   ;==>_insrec
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _addrec
+; Name ..........: AddAccount
 ; Description ...: Add an account in the database
-; Syntax ........: _addrec($account, $user, $email, $pass)
+; Syntax ........: AddAccount($account, $user, $email, $pass)
 ; Parameters ....: $account             - string value of account name.
 ;                  $uRec                - an string value.
 ;                  $email               - an string value.
@@ -90,23 +89,24 @@ EndFunc   ;==>_insrec
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _addrec($account, $user, $email, $pass) ;Aggiungi i record e se necessario oscurarli
+Func AddAccount($account, $user, $email, $pass) ;Aggiungi i record e se necessario oscurarli
 
 	If $account = "" Then
 		MsgBox(16, "Error", "Nothing to add...", 1)
 		Return
 	EndIf
 
-	Local $uEncrypted = StringEncrypt(True, $user, $g_hKey)
-	Local $pEncrypted = StringEncrypt(True, $pass, $g_hKey)
+	Local $uEncrypted		 = StringEncrypt(True, $user, $g_hKey)
+	Local $pEncrypted		 = StringEncrypt(True, $pass, $g_hKey)
+	Local $emailEncrypted	 = StringEncrypt(True, $email, $g_hKey)
 
 	IniWrite($settingfile, $account, "Username", $uEncrypted)
-	IniWrite($settingfile, $account, "Email", $email)
+	IniWrite($settingfile, $account, "Email", $emailEncrypted)
 	IniWrite($settingfile, $account, "Password", $pEncrypted)
 
 	MsgBox(64, "Success", "Record saved successfully!")
 
-EndFunc   ;==>_addrec
+EndFunc   ;==>AddAccount
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _addField
@@ -123,8 +123,8 @@ EndFunc   ;==>_addrec
 ; ===============================================================================================================================
 Func _addField() ;Aggiungi nuovi records
 
-	$addrecGUI = GUICreate("Add Records", 515, 294, -1, -1, $WS_EX_TOPMOST)
-	$recLabel1 = GUICtrlCreateLabel("Record #1", 16, 16, 72, 25)
+	$addrecGUI	 = GUICreate("Add Records", 515, 294, -1, -1, $WS_EX_TOPMOST)
+	$recLabel1	 = GUICtrlCreateLabel("Record #1", 16, 16, 72, 25)
 ;~ 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
 
@@ -141,7 +141,6 @@ Func _addField() ;Aggiungi nuovi records
 	$okButton	 =	 GUICtrlCreateButton("Save Records", 197, 224, 121, 33)
 	$cancelButton1 = GUICtrlCreateButton("Cancel", 376, 224, 121, 33)
 	GUISetState(@SW_SHOW, $addrecGUI)
-
 
 	While 1
 		$nMsg = GUIGetMsg()
@@ -256,11 +255,13 @@ Func _readrec() ;Leggi records
 				_readrec() ;Aggiorno la GUI per visualizzare le nuove voci
 				ExitLoop
 
-			Case $show
+			Case $show ;pulsante Mostra
+				;TODO: inserire qui la logica di decriptazione dei dati sensibili
+				;      evitando cosi di nascondere la finestra e riaprirla eseguendo codice non necessario.
 				If $hide = 1 Then $sh = 1
 				GUISetState(@SW_HIDE, $ReadRecGUI)
 				_readrec() ;Update GUI
-				ExitLoop
+				ExitLoop ;non esce dal loop in questa maniera
 
 			Case $remButton
 				_remove($vListItem)
@@ -293,7 +294,7 @@ Func _remove($vRem) ;Rimuovi accounts
 	Select
 		Case $iMsgBoxAnswer = 6 ;Yes
 			IniDelete($settingfile, $vRem)
-			_updategui()
+			UpdateList()
 			TrayTip($name, $vRem & " Account Removed!", 1)
 			Return
 		Case $iMsgBoxAnswer = 7 ;No
