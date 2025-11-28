@@ -8,9 +8,9 @@
 #include-once
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _checkhashdata
+; Name ..........: _checkhash
 ; Description ...: Compare two hash string data using SHA-256 bit
-; Syntax ........: _checkhashdata($skey)
+; Syntax ........: _checkhash($skey)
 ; Parameters ....: $pass, $hash_ini, $salt_ini   - a string values.
 ; Return values .: $result                       - a boolean value.
 ; Author ........: Jyukat
@@ -79,7 +79,7 @@ EndFunc   ;==>StringEncrypt
 Func _RandomString($iLength = Default)
 	If $iLength = Default Then $iLength = 8
     Local $sResult = ""
-    Local $sChars = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>()=.;_-+$!?@#/"
+    Local $sChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>()=.,:;_-+$!?@#/^?'!°*\"
     For $i = 1 To $iLength
         $sResult &= StringMid($sChars, Random(1, StringLen($sChars), 1), 1)
     Next

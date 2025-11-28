@@ -1,30 +1,25 @@
 ; ===============================================================================================================================
 ;
 ; AutoIt v3 - Password manager by Jyukat
-; Modified in 21/11/2025
 ;
 ; ===============================================================================================================================
 
 #include <Crypt.au3>
-#include <GDIplus.au3>
-#include <Memory.au3>
 #include <File.au3>
 #include <FileConstants.au3>
 #include <APIFilesConstants.au3>
 #include <ButtonConstants.au3>
 #include <EditConstants.au3>
 #include <GUIConstantsEx.au3>
+#include <ListViewConstants.au3>
+#include <GuiListView.au3>
 #include <GuiButton.au3>
 #include <StaticConstants.au3>
 #include <WinAPIFiles.au3>
 #include <WindowsConstants.au3>
 #include <Misc.au3>
 
-
 _Crypt_Startup() ; Initialize the Crypt library, to improve performance
-_GDIPlus_Startup()
-
-
 Opt("TrayMenuMode", 1) ; Enable tray menu
 
 #region Global variables and constants
@@ -64,7 +59,7 @@ Do
 								"Press NO to import a configuration file")
 		Select
 			Case $iMsgBoxAnswer = 6 ;Yes
-				_signIn()
+				SignInWindow()
 				ExitLoop
 			Case $iMsgBoxAnswer = 7 ;No
 				If _Import() Then ExitLoop
@@ -107,7 +102,7 @@ While 1
 			$username = GUICtrlRead($in_username)
 			$masterpassword = GUICtrlRead($in_masterpass)
 
-			If _checkreg($username, $masterpassword) Then
+			If CheckUser($username, $masterpassword) Then
 				$stored_salt = IniRead($settingfile, "User", "salt", "")
 				$g_hKey = _Crypt_DeriveKey($masterpassword & $stored_salt, $CALG_AES_256)
 				$masterpassword = Null
@@ -117,7 +112,7 @@ While 1
 			EndIf
 
 		Case $Label_reg
-			_signIn()
+			SignInWindow()
 
 		Case $btnabout
 			_about()
@@ -175,7 +170,7 @@ Func WinMain() ;Interfaccia principale
 			Case $backUp
 				_backup()
 			Case $List1
-				_readrec()
+				ReadFields()
             EndSwitch
 
 		Local $msg = TrayGetMsg()
@@ -223,27 +218,3 @@ Func _exit() ;Esci dal programma
 			Exit
 	EndSelect
 EndFunc   ;==>_esci
-
-#cs not implemented
-Func _crypt()
-Local $password = GUICtrlRead($stringlb)
-Local $salt = "123456789abcdefg" ;_RandomString(16) ; Genera una stringa casuale di 16 caratteri come salt
-Local $iterations = GUICtrlRead($iteredit) ; Numero di iterazioni
-
-GUICtrlSetData($log, "Stringa: " & $password & @CRLF & "Salt: " & $salt & @CRLF & "Iterazioni: " & $iterations & @CRLF)
-
-Local $hashedPassword = _Crypt_HashData($password & $salt, $CALG_SHA_512)
-
-For $i = 0 to $iterations
-$hashedPassword = _Crypt_HashData($hashedPassword, $CALG_SHA_512)
-Next
-
-$storedPass = $password
-$storedHashedPassword = $hashedPassword
-$storedIterations = $iterations
-$storedsalt = $salt
-
-GUICtrlSetData($log, "Stringa criptata: " & $storedHashedPassword & @CRLF & "Salt salvata: " & $storedsalt & @CRLF & "Iterazioni effettuate: " & $storedIterations & @CRLF)
-
-EndFunc
-#ce

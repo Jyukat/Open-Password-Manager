@@ -25,7 +25,7 @@ Func _passGen()
 	$BTN_generate = GUICtrlCreateButton("Generate", 352, 8, 57, 25)
 	$BTN_copy = GUICtrlCreateButton("Copy", 416, 8, 33, 25)
 	$input_password = GUICtrlCreateInput("", 8, 8, 281, 25, BitOR($GUI_SS_DEFAULT_INPUT,$ES_READONLY))
-	$input_n = GUICtrlCreateInput("8", 296, 8, 25, 25, BitOR($GUI_SS_DEFAULT_INPUT,$ES_NUMBER))
+	$input_n = GUICtrlCreateInput("8", 296, 8, 40, 25, BitOR($GUI_SS_DEFAULT_INPUT,$ES_NUMBER))
 	GUICtrlCreateUpdown($input_n)
 	GUICtrlSetLimit($input_n, 8, 64) ; to limit the entry to 64 chars
 
@@ -38,11 +38,11 @@ Func _passGen()
 				GUISwitch($MainUI)
 			ExitLoop
 		Case $BTN_copy
-			ClipPut($input_password)
+			ClipPut(GUICtrlRead($input_password))
 			Case $BTN_generate
-				_RandomString($input_n)
+				GUICtrlSetData($input_password, _RandomString(GUICtrlRead($input_n)))
 			Case $input_n
-				_RandomString($input_n)
+				GUICtrlSetData($input_password, _RandomString(GUICtrlRead($input_n)))
 		EndSwitch
 	WEnd
 

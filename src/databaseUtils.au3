@@ -1,7 +1,6 @@
 ; ===============================================================================================================================
 ;
 ; AutoIt v3 - Password manager by Jyukat
-; Modified in 21/11/2025
 ;
 ; ===============================================================================================================================
 
@@ -21,7 +20,7 @@
 ; Example .......: No
 ; ===============================================================================================================================
 Func NewAccountUI()
-	$insrec = GUICreate("New Account", 514, 330, -1, -1, Null, Null, $MainUI)
+	$hNewAccountGUI = GUICreate("New Account", 514, 330, -1, -1, Null, Null, $MainUI)
 	GUISetFont(10, 400, 0, "Segoe UI")
 
 	$Group1 = GUICtrlCreateGroup("Account Details", 16, 8, 481, 305)
@@ -49,7 +48,7 @@ Func NewAccountUI()
 	$btn_confirm = GUICtrlCreateButton("Confirm", 192, 264, 129, 33)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
 
-	$tip = GUICtrlCreateLabel("To create other records you must first register these required fields.", 44, 232, 440, 25)
+	$tip = GUICtrlCreateLabel("To create other records you must register these required fields.", 44, 232, 440, 25)
 	GUISetFont(10, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0xFF0000)
 
@@ -68,10 +67,10 @@ Func NewAccountUI()
 		EndSwitch
 	WEnd
 
-GUIDelete($insrec)
+GUIDelete($hNewAccountGUI)
 GUISwitch($MainUI)
 
-EndFunc   ;==>_insrec
+EndFunc   ;==>NewAccountUI
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: AddAccount
@@ -109,9 +108,9 @@ Func AddAccount($account, $user, $email, $pass) ;Aggiungi i record e se necessar
 EndFunc   ;==>AddAccount
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _addField
+; Name ..........: AddField
 ; Description ...: Add new field in the exists accounts
-; Syntax ........: _addField()
+; Syntax ........: AddField()
 ; Parameters ....:
 ; Return values .: None
 ; Author ........: Jyukat
@@ -121,9 +120,9 @@ EndFunc   ;==>AddAccount
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _addField() ;Aggiungi nuovi records
+Func AddField() ;Aggiungi nuovi records
 
-	$addrecGUI	 = GUICreate("Add Records", 515, 294, -1, -1, $WS_EX_TOPMOST)
+	$addrecGUI	 = GUICreate("Add Fields", 515, 294, -1, -1, $WS_EX_TOPMOST)
 	$recLabel1	 = GUICtrlCreateLabel("Record #1", 16, 16, 72, 25)
 ;~ 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
@@ -149,7 +148,7 @@ Func _addField() ;Aggiungi nuovi records
 				ExitLoop
 
 			Case $okButton
-				_writeField()
+				WriteField()
 				ExitLoop
 		EndSwitch
 	WEnd
@@ -157,12 +156,12 @@ Func _addField() ;Aggiungi nuovi records
 GUIDelete($addrecGUI)
 GUISwitch($ReadRecGUI)
 
-EndFunc   ;==>_addField
+EndFunc   ;==>AddField
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _readrec
+; Name ..........: ReadFields
 ; Description ...: Read the field of a account
-; Syntax ........: _readrec()
+; Syntax ........: ReadFields()
 ; Parameters ....:
 ; Return values .: None
 ; Author ........: Jyukat
@@ -172,7 +171,7 @@ EndFunc   ;==>_addField
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _readrec() ;Leggi records
+Func ReadFields() ;Leggi records
 
 	$hide = 1
 
@@ -250,9 +249,9 @@ Func _readrec() ;Leggi records
 				TrayTip($name, "Password copied!", 1)
 
 			Case $addNewField
-				_addField()
+				AddField()
 				GUISetState(@SW_HIDE, $ReadRecGUI)
-				_readrec() ;Aggiorno la GUI per visualizzare le nuove voci
+				ReadFields() ;Aggiorno la GUI per visualizzare le nuove voci
 				ExitLoop
 
 			Case $show ;pulsante Mostra
@@ -260,11 +259,11 @@ Func _readrec() ;Leggi records
 				;      evitando cosi di nascondere la finestra e riaprirla eseguendo codice non necessario.
 				If $hide = 1 Then $sh = 1
 				GUISetState(@SW_HIDE, $ReadRecGUI)
-				_readrec() ;Update GUI
+				ReadFields() ;Update GUI
 				ExitLoop ;non esce dal loop in questa maniera
 
 			Case $remButton
-				_remove($vListItem)
+				RemoveAccount($vListItem)
 				ExitLoop
 		EndSwitch
 	WEnd
@@ -272,13 +271,13 @@ Func _readrec() ;Leggi records
 GUIDelete($ReadRecGUI)
 GUISwitch($MainUI)
 
-EndFunc   ;==>_readrec
+EndFunc   ;==>ReadFields
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _remove
+; Name ..........: RemoveAccount
 ; Description ...: Remove a exist account form the database
-; Syntax ........: _remove($vRem)
-; Parameters ....: $vRem                - a variant value.
+; Syntax ........: RemoveAccount($vRem)
+; Parameters ....: $vRem                - a string value.
 ; Return values .: None
 ; Author ........: Jyukat
 ; Modified ......:
@@ -287,7 +286,7 @@ EndFunc   ;==>_readrec
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _remove($vRem) ;Rimuovi accounts
+Func RemoveAccount($vRem) ;Rimuovi accounts
 
 	If Not IsDeclared("iMsgBoxAnswer") Then Local $iMsgBoxAnswer
 	$iMsgBoxAnswer = MsgBox(262452,"","Are you sure? : ")
@@ -304,9 +303,9 @@ Func _remove($vRem) ;Rimuovi accounts
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _writeField
+; Name ..........: WriteField
 ; Description ...: Write fields of the account
-; Syntax ........: _writeField()
+; Syntax ........: WriteField()
 ; Parameters ....:
 ; Return values .: None
 ; Author ........: Jyukat
@@ -316,7 +315,7 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _writeField() ;Scrivi records
+Func WriteField() ;Scrivi records
 
 	Local $vEn1, $vEn2
 
@@ -367,4 +366,4 @@ Func _writeField() ;Scrivi records
 
 	MsgBox(64, "Nice", "Data added successfully!", "", $MB_TOPMOST)
 
-EndFunc   ;==>_writeField
+EndFunc   ;==>WriteField

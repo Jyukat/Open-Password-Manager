@@ -48,4 +48,17 @@ Else
     MsgBox(16, "Errore", "Password errata!")
 EndIf
 
+MsgBox(0, "Successo", "pass generata: " & _RandomString(12))
+
+Func _RandomString($iLength = Default)
+	If $iLength = Default Then $iLength = 8
+;~ 	SRandom(@SEC + $iLength)
+    Local $sResult = ""
+    Local $sChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>()=.,:;_-+$!?@#/^?'!°*\|"
+    For $i = 1 To $iLength
+        $sResult &= StringMid($sChars, Random(1, StringLen($sChars), 1), 1)
+    Next
+    Return $sResult
+EndFunc
+
 _Crypt_Shutdown()

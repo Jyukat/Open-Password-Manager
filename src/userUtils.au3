@@ -9,9 +9,9 @@
 #include "cryptUtils.au3"
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _checkreg
+; Name ..........: CheckUser
 ; Description ...: Check the config file
-; Syntax ........: _checkreg($iUser, $iPass)
+; Syntax ........: CheckUser($iUser, $iPass)
 ; Parameters ....: $iUser               - an string value.
 ;                  $iPass               - an string value.
 ; Return values .: Boolean
@@ -22,7 +22,7 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _checkreg($User, $Password)
+Func CheckUser($User, $Password)
 	;Leggo Sezione User
 	Local $stored_user	=	 IniRead($settingfile, "User", "username", "")
 	Local $stored_hash	=	 IniRead($settingfile, "User", "hash"	 , "")
@@ -34,9 +34,9 @@ Func _checkreg($User, $Password)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _signIn
+; Name ..........: SignInWindow
 ; Description ...: Perform a registration routine for the user
-; Syntax ........: _signIn()
+; Syntax ........: SignInWindow()
 ; Parameters ....: None
 ; Return values .: None
 ; Author ........: Jyukat
@@ -46,9 +46,9 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _signIn()
+Func SignInWindow()
 
-$regGUI = GUICreate("Registration", 298, 277, -1, -1)
+$hSignInGUI = GUICreate("Registration", 298, 277, -1, -1)
 GUISetFont(8, 400, 0, "Segoe UI")
 
 $in_user = GUICtrlCreateInput("Insert your username", 16, 24, 265, 25)
@@ -70,7 +70,7 @@ GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
 $importa = GUICtrlCreateButton("Import", 208, 248, 73, 17)
 GUICtrlSetColor(-1, 0x0066CC)
 
-GUISetState(@SW_SHOW,$regGUI)
+GUISetState(@SW_SHOW,$hSignInGUI)
 
 While 1
 	$nMsg = GUIGetMsg()
@@ -79,7 +79,7 @@ While 1
 			ExitLoop
 
 		Case $btn_register
-			_writereg(GUICtrlRead($in_user), GUICtrlRead($in_masterpass))
+			CreateUser(GUICtrlRead($in_user), GUICtrlRead($in_masterpass))
 			If @error Then
 				MsgBox(16,"Error","Insert User and Password")
 			Else
@@ -92,15 +92,15 @@ While 1
 	EndSwitch
 WEnd
 
-GUIDelete($regGUI)
+GUIDelete($hSignInGUI)
 GUISwitch($loginUI)
 
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _writereg
+; Name ..........: CreateUser
 ; Description ...: Write in the disk the configuration file
-; Syntax ........: _writereg($username, $masterpass)
+; Syntax ........: CreateUser($username, $masterpass)
 ; Parameters ....: $username, $masterpass - String values
 ; Return values .: None
 ; Author ........: Jyukat
@@ -110,7 +110,7 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _writereg($username, $masterpass)
+Func CreateUser($username, $masterpass)
 
 	If $username == "" And $masterpass == "" Then
 		SetError(1)
