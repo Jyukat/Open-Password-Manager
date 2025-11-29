@@ -4,6 +4,8 @@
 ;
 ; ===============================================================================================================================
 
+#AutoIt3Wrapper_Res_HiDpi=Y ;HiDpi
+
 #include <Crypt.au3>
 #include <File.au3>
 #include <FileConstants.au3>
@@ -19,6 +21,8 @@
 #include <WindowsConstants.au3>
 #include <Misc.au3>
 
+If Not (@Compiled ) Then DllCall("User32.dll","bool","SetProcessDPIAware") ;HiDpi
+
 _Crypt_Startup() ; Initialize the Crypt library, to improve performance
 Opt("TrayMenuMode", 1) ; Enable tray menu
 
@@ -28,7 +32,7 @@ Global $username, $stored_salt
 Global $loginUI, $MainUI, $List1, $vListItem, $insrec, $Checkbox1, $Checkbox2, $recName, $recName1
 Global $recValue, $recValue1, $sh, $hide, $ReadRecGUI
 
-Global Const $settingfile	 = 		@LocalAppDataDir & "\OPM\data\config\config.ini"
+Global Const $settingfile	 = 		@LocalAppDataDir & "\OPMtest\config.ini"
 Global Const $sInitDir		 = 		"::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
 Global Const $name			 = 		"Open Password Manager"
 Global Const $tempFolder	 = 		@TempDir & "\"
@@ -50,26 +54,27 @@ Global $aRead[5]
 #include "clipUtils.au3"
 #include "uiUtils.au3"
 
-;Check if a user config file exist
+;Check if a user file exist
 Do
 	If Not FileExists($settingfile) Then
 		$iMsgBoxAnswer = MsgBox(262196, $name, _
 								"No account found!" & @CRLF & _
-								"Create a new account or import an existing one." & @CRLF & "Press YES to create a new user" & @CRLF & _
+								"Create a new account or import an existing one." & @CRLF & _
+								"Press YES to create a new user" & @CRLF & _
 								"Press NO to import a configuration file")
 		Select
 			Case $iMsgBoxAnswer = 6 ;Yes
 				SignInWindow()
 				ExitLoop
 			Case $iMsgBoxAnswer = 7 ;No
-				If _Import() Then ExitLoop
+				If Import() Then ExitLoop
 			EndSelect
 	Else
 		ExitLoop
 	EndIf
 Until False
 
-$loginUI =	 GUICreate("Log In", 250, 280, -1, -1)
+$hLoginUI =	 GUICreate("Log In", 250, 280, -1, -1)
 GUISetFont(10, 400, 0, "Segoe UI")
 
 $label_user			 =	 GUICtrlCreateLabel("User", 16, 24, 31, 21)
@@ -89,16 +94,15 @@ GUISetFont(10, 700, 0, "Segoe UI")
 $btnabout	 =	 GUICtrlCreateButton("About", 16, 238, 217, 25)
 
 
-GUISetState(@SW_SHOW, $loginUI)
+GUISetState(@SW_SHOW, $hLoginUI)
 
 While 1
 	$nMsg = GUIGetMsg()
 	Switch $nMsg
 		Case $GUI_EVENT_CLOSE
-			_exit()
+			Quit()
 
 		Case $bnt_login
-
 			$username = GUICtrlRead($in_username)
 			$masterpassword = GUICtrlRead($in_masterpass)
 
@@ -115,29 +119,28 @@ While 1
 			SignInWindow()
 
 		Case $btnabout
-			_about()
+			About()
 
 		Local $msg = TrayGetMsg()
 			Select
 			Case $msg = $restore
 				GUISetState(@SW_SHOW, $loginUI)
 			Case $msg = $exititem
-				_exit()
+				Quit()
 			Case $msg = $reboot
-				_reboot()
+				Reboot()
 			EndSelect
 	EndSwitch
 WEnd
 
-GUIDelete($loginUI)
+GUIDelete($hLoginUI)
 WinMain()
 
-Func WinMain() ;Interfaccia principale
-
+Func WinMain()
 	$MainUI		 =	 GUICreate("Welcome " & $username, 350, 420, -1, -1)
 	$Menu		 =	 GUICtrlCreateMenu("&Menù")
 	$new		 =	 GUICtrlCreateMenuItem("Add account" & @TAB & "Ctrl+N", $Menu)
-	$passGen	 =	 GUICtrlCreateMenuItem("Passoword Generator" & @TAB & "Ctrl+1", $Menu)
+	$passGen	 =	 GUICtrlCreateMenuItem("Password Generator" & @TAB & "Ctrl+1", $Menu)
 	$settings	 =	 GUICtrlCreateMenuItem("Settings" & @TAB & "Ctrl+Space", $Menu)
 	$about		 =	 GUICtrlCreateMenuItem("About", $Menu)
 	$List1		 =	 GUICtrlCreateList("", 5, 5, 340, 320)
@@ -158,17 +161,17 @@ Func WinMain() ;Interfaccia principale
 		$nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE
-				_exit()
+				Quit()
 			Case $new, $addRec
 				NewAccountUI()
 			Case $passGen
-				_passGen()
+				PasswordGeneratorUI()
 			Case $settings
-				_settingGUI()
+				SettingUI()
 			Case $about
-				_about()
+				About()
 			Case $backUp
-				_backup()
+				Backup()
 			Case $List1
 				ReadFields()
             EndSwitch
@@ -178,17 +181,15 @@ Func WinMain() ;Interfaccia principale
 				Case $msg = $restore
 					GUISetState(@SW_SHOW, $MainUI)
 				Case $msg = $exititem
-					_exit()
+					Quit()
 				Case $msg = $reboot
-					_reboot()
+					Reboot()
 			EndSelect
 	WEnd
 
-EndFunc   ;==>_main
+EndFunc
 
-;~ altre funzioni minori
 Func AddToStartup($vSwitch) ; Run on windows startup working on winXP and later.
-
 	Local $ShortcutFile = @StartupDir &"\"& $name &".lnk"
 
 	If _IsChecked($vSwitch) Then
@@ -202,19 +203,19 @@ Func AddToStartup($vSwitch) ; Run on windows startup working on winXP and later.
 
 EndFunc
 
-Func _reboot() ;Riavvio
+Func Reboot()
 	_Crypt_DestroyKey($g_hKey) 	; Destroy Key
 	_Crypt_Shutdown() 		   	; Shutdown the crypt library.
 	Run (@ScriptFullPath)		; Call itself
 	Exit
 EndFunc
 
-Func _exit() ;Esci dal programma
+Func Quit()
 	Local $iMsgBoxAnswer = MsgBox(36, "Exit?", "Are you sure?")
 	Select
 		Case $iMsgBoxAnswer = 6 ;Sì
-			_Crypt_DestroyKey($g_hKey) ; Destroy Key
+			If $g_hKey <> Null Then _Crypt_DestroyKey($g_hKey) ; Destroy Key
 			_Crypt_Shutdown() ; Shutdown the crypt library.
 			Exit
 	EndSelect
-EndFunc   ;==>_esci
+EndFunc

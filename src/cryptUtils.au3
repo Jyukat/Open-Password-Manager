@@ -79,7 +79,7 @@ EndFunc   ;==>StringEncrypt
 Func _RandomString($iLength = Default)
 	If $iLength = Default Then $iLength = 8
     Local $sResult = ""
-    Local $sChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>()=.,:;_-+$!?@#/^?'!°*\"
+    Local $sChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>()=:-+$?!@#$%^&*"
     For $i = 1 To $iLength
         $sResult &= StringMid($sChars, Random(1, StringLen($sChars), 1), 1)
     Next

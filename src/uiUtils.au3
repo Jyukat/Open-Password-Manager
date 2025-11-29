@@ -8,9 +8,9 @@
 #include-once
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _passGen
+; Name ..........: PasswordGeneratorUI
 ; Description ...: minimal Password Generator UI
-; Syntax ........: _passGen()
+; Syntax ........: PasswordGeneratorUI()
 ; Parameters ....: None
 ; Return values .: None
 ; Author ........: Jyukat
@@ -20,7 +20,7 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _passGen()
+Func PasswordGeneratorUI()
 	$PassGenUI = GUICreate("Password Generator", 456, 43, -1, -1, -1, BitOR($WS_EX_TOOLWINDOW,$WS_EX_WINDOWEDGE), $MainUI)
 	$BTN_generate = GUICtrlCreateButton("Generate", 352, 8, 57, 25)
 	$BTN_copy = GUICtrlCreateButton("Copy", 416, 8, 33, 25)
@@ -81,9 +81,9 @@ Func UpdateList() ;Aggiorna la GUI principale
 EndFunc   ;==>_updategui
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _settingGUI
+; Name ..........: SettingUI
 ; Description ...: Settings UI
-; Syntax ........: _settingGUI()
+; Syntax ........: SettingUI()
 ; Parameters ....:
 ; Return values .: None
 ; Author ........: Jyukat
@@ -93,7 +93,7 @@ EndFunc   ;==>_updategui
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _settingGUI()
+Func SettingUI()
 
 $Impostazioni = GUICreate("Settings", 554, 492, -1, -1, -1, BitOR($WS_EX_TOOLWINDOW,$WS_EX_WINDOWEDGE), $MainUI)
 GUISetFont(12, 400, 0, "Segoe UI")
@@ -148,13 +148,12 @@ While 1
 	$nMsg = GUIGetMsg()
 	Switch $nMsg
 		Case $GUI_EVENT_CLOSE
-			GUISwitch($MainUI)
 			ExitLoop
 		Case $import
-			_Import()
-			_reboot()
+			Import()
+			Reboot()
 		Case $export
-			_Export()
+			Export()
 		Case $on_start
 			If AddToStartup($on_start) Then
 				GUICtrlSetData($attdisatt, "Activated")
@@ -169,6 +168,7 @@ While 1
 WEnd
 
 GUIDelete($Impostazioni)
+GUISwitch($MainUI)
 
 EndFunc
 
@@ -185,14 +185,14 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _IsChecked($idControlID) ;Controlla se le checkbox sono spuntate o meno
+Func _IsChecked($idControlID)
 	Return BitAND(GUICtrlRead($idControlID), $GUI_CHECKED) = $GUI_CHECKED
 EndFunc   ;==>_IsChecked
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _about
+; Name ..........: About
 ; Description ...: About Dialog
-; Syntax ........: _about()
+; Syntax ........: About()
 ; Parameters ....:
 ; Return values .: None
 ; Author ........: Jyukat
@@ -202,18 +202,17 @@ EndFunc   ;==>_IsChecked
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _about() ;About
+Func About() ;About
 Local $iOldOpt = Opt("GUICoordMode", 1)
 
-Local $aboutUI = GUICreate("About", 588, 146, 192, 124, -1, $WS_EX_TOOLWINDOW)
-$Icon1 = GUICtrlCreateIcon(300, -1, 8, 8, 129, 129)
+Local $aboutUI = GUICreate("About", 480, 146, 192, -1, -1, $WS_EX_TOOLWINDOW)
 $appnamelb = GUICtrlCreateLabel("Open Password Manager", 224, 8, 256, 32)
 GUICtrlSetFont(-1, 16, 400, 0, "Segoe UI")
 
-$createdbylb = GUICtrlCreateLabel("Created by Giuseppe Catania a.k.a. hacktooth", 144, 48, 268, 19)
+$createdbylb = GUICtrlCreateLabel("Created by Giuseppe Catania 'Jyukat'", 144, 48, 268, 19)
 GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
 
-$reasonlb = GUICtrlCreateLabel("Reasons: too boored too poor to pay any other password manager service", 144, 72, 424, 19)
+$reasonlb = GUICtrlCreateLabel("Reason: too boored too poor to pay any password manager service", 144, 72, 424, 19)
 GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
 
 $sourcecodelb = GUICtrlCreateLabel("Source code available on github.com/Jyukat/Open-Password-Manager", 144, 96, 424, 19)
@@ -241,4 +240,4 @@ Opt("GUICoordMode", $iOldOpt)
 
 GUIDelete($aboutUI)
 
-EndFunc   ;==>_about
+EndFunc

@@ -47,7 +47,6 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func SignInWindow()
-
 $hSignInGUI = GUICreate("Registration", 298, 277, -1, -1)
 GUISetFont(8, 400, 0, "Segoe UI")
 
@@ -88,7 +87,7 @@ While 1
 			EndIf
 
 		Case $importa
-			If _Import() Then _reboot()
+			If Import() Then Reboot()
 	EndSwitch
 WEnd
 

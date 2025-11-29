@@ -88,23 +88,17 @@ EndFunc   ;==>NewAccountUI
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func AddAccount($account, $user, $email, $pass) ;Aggiungi i record e se necessario oscurarli
-
+Func AddAccount($account, $user, $email, $pass)
 	If $account = "" Then
 		MsgBox(16, "Error", "Nothing to add...", 1)
 		Return
 	EndIf
 
-	Local $uEncrypted		 = StringEncrypt(True, $user, $g_hKey)
-	Local $pEncrypted		 = StringEncrypt(True, $pass, $g_hKey)
-	Local $emailEncrypted	 = StringEncrypt(True, $email, $g_hKey)
+	Local $passEncrypted = StringEncrypt(True, $pass, $g_hKey)
 
-	IniWrite($settingfile, $account, "Username", $uEncrypted)
-	IniWrite($settingfile, $account, "Email", $emailEncrypted)
-	IniWrite($settingfile, $account, "Password", $pEncrypted)
-
-	MsgBox(64, "Success", "Record saved successfully!")
-
+	IniWrite($settingfile, $account, "Username", $user)
+	IniWrite($settingfile, $account, "Email", $email)
+	IniWrite($settingfile, $account, "Password", $passEncrypted)
 EndFunc   ;==>AddAccount
 
 ; #FUNCTION# ====================================================================================================================
@@ -121,7 +115,6 @@ EndFunc   ;==>AddAccount
 ; Example .......: No
 ; ===============================================================================================================================
 Func AddField() ;Aggiungi nuovi records
-
 	$addrecGUI	 = GUICreate("Add Fields", 515, 294, -1, -1, $WS_EX_TOPMOST)
 	$recLabel1	 = GUICtrlCreateLabel("Record #1", 16, 16, 72, 25)
 ;~ 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
@@ -249,8 +242,8 @@ Func ReadFields() ;Leggi records
 				TrayTip($name, "Password copied!", 1)
 
 			Case $addNewField
-				AddField()
 				GUISetState(@SW_HIDE, $ReadRecGUI)
+				AddField()
 				ReadFields() ;Aggiorno la GUI per visualizzare le nuove voci
 				ExitLoop
 
@@ -286,15 +279,14 @@ EndFunc   ;==>ReadFields
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func RemoveAccount($vRem) ;Rimuovi accounts
-
+Func RemoveAccount($account) ;Rimuovi accounts
 	If Not IsDeclared("iMsgBoxAnswer") Then Local $iMsgBoxAnswer
 	$iMsgBoxAnswer = MsgBox(262452,"","Are you sure? : ")
 	Select
 		Case $iMsgBoxAnswer = 6 ;Yes
-			IniDelete($settingfile, $vRem)
+			IniDelete($settingfile, $account)
 			UpdateList()
-			TrayTip($name, $vRem & " Account Removed!", 1)
+			TrayTip($name, $account & " Account Removed!", 1)
 			Return
 		Case $iMsgBoxAnswer = 7 ;No
 			Return

@@ -20,7 +20,7 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _Import() ;Importa file config
+Func Import()
 
 	; Create a constant variable in Local scope of the message to display in FileOpenDialog
 	Local Const $sMess = "Select the configuration account file"
@@ -62,7 +62,7 @@ EndFunc   ;==>_Import
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _Export() ;Esporta file config
+Func Export()
 	; Create a constant variable in Local scope of the message to display in FileSaveDialog.
 	Local Const $sMessage = "Choice the file name"
 
@@ -95,9 +95,9 @@ Func _Export() ;Esporta file config
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _backup
+; Name ..........: Backup
 ; Description ...: Create a backup of the configuration file
-; Syntax ........: _backup()
+; Syntax ........: Backup()
 ; Parameters ....: None
 ; Return values .: None
 ; Author ........: Jyukat
@@ -107,7 +107,7 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _backup()
+Func Backup()
 	; Create a constant variable in Local scope of the message to display in FileSelectFolder.
 	Local Const $sMessage_1 = "Choice where to save the backup file"
 
@@ -117,7 +117,7 @@ Func _backup()
 		; Display the error message.
 		MsgBox($MB_SYSTEMMODAL, "", "No folder selected!")
 	Else
-		Local $sTempFile_1 = _TempFile($sFileSelectFolder & "\", "backup_" & @HOUR & "-" & @MIN & "-" & @SEC, ".dat", Default)
+		Local $sTempFile_1 = _TempFile($sFileSelectFolder & "\", "backup_" & @HOUR & "-" & @MIN, ".dat", Default)
 		FileCopy($settingfile, @TempDir & "\tmpbak\", $FC_OVERWRITE + $FC_CREATEPATH)
 		FileMove(@TempDir & "\tmpbak\settings.ini", $sTempFile_1, $FC_CREATEPATH)
 		FileDelete(@TempDir & "\tmpbak\settings.ini")
