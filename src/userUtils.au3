@@ -102,7 +102,7 @@ EndFunc
 ; Description ...: Write in the disk the configuration file
 ; Syntax ........: CreateUser($username, $masterpass)
 ; Parameters ....: $username, $masterpass - String values
-; Return values .: None
+; Return values .: @Error 1 if username or password are empty
 ; Author ........: Jyukat
 ; Modified ......:
 ; Remarks .......:
@@ -126,6 +126,11 @@ Func CreateUser($username, $masterpass)
 	Local $hash_verify 		 = _Crypt_HashData($masterpass & $salt, $CALG_SHA_256)
 	Local $key 				 = _Crypt_DeriveKey($masterpass & $salt, $CALG_AES_256)
 	Local $encrypted_user	 = _Crypt_EncryptData($username, $key, $CALG_USERKEY)
+
+	;Creo il file account
+	If Not _FileCreate($settingfile) Then
+		MsgBox($MB_SYSTEMMODAL, "Error", " Error Creating/Resetting.      error:" & @error)
+	EndIf
 
 	;Create file and write data
 	IniWrite($settingfile, "User", "username", $encrypted_user)
