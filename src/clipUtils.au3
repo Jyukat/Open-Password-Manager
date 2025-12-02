@@ -8,10 +8,10 @@
 #include-once
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _clippa
+; Name ..........: Clippa
 ; Description ...: Copy a password and reset clipboard after 10 second
-; Syntax ........: _clippa($field)
-; Parameters ....: $field               - a field value.
+; Syntax ........: Clippa($string)
+; Parameters ....: $string               - a string value.
 ; Return values .: None
 ; Author ........: Jykat
 ; Modified ......: None
@@ -20,15 +20,15 @@
 ; Link ..........: None
 ; Example .......: No
 ; ===============================================================================================================================
-Func _clippa($field) ; Copy a password in the clipboard
-	ClipPut(StringEncrypt(False, $field, $g_hKey))
-	AdlibRegister(_resetclip, 10000)
+Func Clippa($string) ; Copy a password in the clipboard
+	ClipPut(StringEncrypt(False, $string, $g_hKey))
+	AdlibRegister(ResetClip, 10000) ; Delete Clipboard after 10 seconds.
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _resetclip
+; Name ..........: ResetClip
 ; Description ...: Clean the clipboard
-; Syntax ........: _resetclip()
+; Syntax ........: ResetClip()
 ; Parameters ....: None
 ; Return values .: None
 ; Author ........: Jyukat
@@ -38,7 +38,7 @@ EndFunc
 ; Link ..........: None
 ; Example .......: No
 ; ===============================================================================================================================
-Func _resetclip() ; Clean the clipboard
+Func ResetClip() ; Clean the clipboard
 	ClipPut(Null)
-	AdlibUnRegister(_resetclip)
+	AdlibUnRegister(ResetClip)
 EndFunc

@@ -24,10 +24,10 @@ Func PasswordGeneratorUI()
 	$PassGenUI = GUICreate("Password Generator", 456, 43, -1, -1, -1, BitOR($WS_EX_TOOLWINDOW,$WS_EX_WINDOWEDGE), $MainUI)
 	$BTN_generate = GUICtrlCreateButton("Generate", 352, 8, 57, 25)
 	$BTN_copy = GUICtrlCreateButton("Copy", 416, 8, 33, 25)
-	$input_password = GUICtrlCreateInput("", 8, 8, 281, 25, BitOR($GUI_SS_DEFAULT_INPUT,$ES_READONLY))
-	$input_n = GUICtrlCreateInput("8", 296, 8, 40, 25, BitOR($GUI_SS_DEFAULT_INPUT,$ES_NUMBER))
-	GUICtrlCreateUpdown($input_n)
-	GUICtrlSetLimit($input_n, 8, 64) ; to limit the entry to 64 chars
+	$input_password = GUICtrlCreateInput("", 8, 8, 281, 25, $ES_READONLY)
+	$input_n = GUICtrlCreateInput("8", 296, 8, 40, 25, $ES_NUMBER)
+	$hUpdown = GUICtrlCreateUpdown($input_n)
+	GUICtrlSetLimit($hUpdown, 12, 64) ; to limit the entry to 64 chars
 
 	GUISetState(@SW_SHOW, $PassGenUI)
 
@@ -50,12 +50,11 @@ Func PasswordGeneratorUI()
 	Return $input_password
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: UpdateList
-; Description ...: Update the main account list
-; Syntax ........: UpdateList()
-; Parameters ....:
+; Description ...: Update the account list
+; Syntax ........: UpdateList($hList)
+; Parameters ....: $hList 	- a handle value
 ; Return values .: None
 ; Author ........: Jyukat
 ; Modified ......:
@@ -64,21 +63,18 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func UpdateList() ;Aggiorna la GUI principale
-
-	;Flush list
-	GUICtrlSetData($List1, "")
-
-	Local $aArray = IniReadSectionNames($settingfile)
+Func UpdateList($hList)
+	GUICtrlSetData($hList, "") ; Flush List
+	$account_list = GetAccountList($settingfile)
+	ConsoleWrite($account_list[0])
 	If Not @error Then
-		For $i = 2 To $aArray[0]
-			GUICtrlSetData($List1, $aArray[$i] & "|")
+		For $i = 2 To $account_list[0]
+			GUICtrlSetData($hList, $account_list[$i] & "|")
 		Next
 	Else
-		MsgBox(16, "Error", "Deletetion or setting file was moved")
+		MsgBox(16, "Error", "Something bad happen.")
 	EndIf
-
-EndFunc   ;==>_updategui
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: SettingUI
@@ -176,7 +172,7 @@ EndFunc
 ; Name ..........: _IsChecked
 ; Description ...: Check if a control is checked or not
 ; Syntax ........: _IsChecked($idControlID)
-; Parameters ....: $idControlID         - an integer value.
+; Parameters ....: $idControlID         - an handle value.
 ; Return values .: Boolean
 ; Author ........: Jyukat
 ; Modified ......:
@@ -185,7 +181,7 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _IsChecked($idControlID)
+Func IsChecked($idControlID)
 	Return BitAND(GUICtrlRead($idControlID), $GUI_CHECKED) = $GUI_CHECKED
 EndFunc   ;==>_IsChecked
 

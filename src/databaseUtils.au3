@@ -52,7 +52,7 @@ Func NewAccountUI()
 	GUISetFont(10, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0xFF0000)
 
-	GUISetState(@SW_SHOW, $insrec)
+	GUISetState(@SW_SHOW, $hNewAccountGUI)
 
 	While 1
 		$nMsg = GUIGetMsg()
@@ -62,7 +62,6 @@ Func NewAccountUI()
 
 			Case $btn_confirm
 				AddAccount(GUICtrlRead($sAccount), GUICtrlRead($sUser), GUICtrlRead($sEmail), GUICtrlRead($sPass))
-				UpdateList()
 				ExitLoop
 		EndSwitch
 	WEnd
@@ -71,6 +70,25 @@ GUIDelete($hNewAccountGUI)
 GUISwitch($MainUI)
 
 EndFunc   ;==>NewAccountUI
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: GetAccountList
+; Description ...: Retrive account list and store in one array
+; Syntax ........: GetAccountList($file)
+; Parameters ....: $file                - a string value.
+; Return values .: $aAccountList 		- a string array.
+; Author ........: Jyukat
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func GetAccountList($file)
+	Local $aAccountList = IniReadSectionNames($file)
+	Return $aAccountList
+EndFunc
+
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: AddAccount
@@ -114,7 +132,7 @@ EndFunc   ;==>AddAccount
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func AddField() ;Aggiungi nuovi records
+Func AddField($account) ;Aggiungi nuovi records
 	$addrecGUI	 = GUICreate("Add Fields", 515, 294, -1, -1, $WS_EX_TOPMOST)
 	$recLabel1	 = GUICtrlCreateLabel("Record #1", 16, 16, 72, 25)
 ;~ 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
@@ -141,7 +159,13 @@ Func AddField() ;Aggiungi nuovi records
 				ExitLoop
 
 			Case $okButton
-				WriteField()
+				WriteField($account, _
+						GuiCtrlRead($recName), _
+						GuiCtrlRead($recName1), _
+						GuiCtrlRead($recValue), _
+						GuiCtrlRead($recValue1), _
+						IsChecked($Checkbox1), _
+						IsChecked($Checkbox2))
 				ExitLoop
 		EndSwitch
 	WEnd
@@ -149,13 +173,13 @@ Func AddField() ;Aggiungi nuovi records
 GUIDelete($addrecGUI)
 GUISwitch($ReadRecGUI)
 
-EndFunc   ;==>AddField
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: ReadFields
 ; Description ...: Read the field of a account
 ; Syntax ........: ReadFields()
-; Parameters ....:
+; Parameters ....: $accountName - a string value
 ; Return values .: None
 ; Author ........: Jyukat
 ; Modified ......:
@@ -164,60 +188,58 @@ EndFunc   ;==>AddField
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func ReadFields() ;Leggi records
+Func ReadFields($accountName)
 
-	$hide = 1
+	If $accountName = "" Then Return
 
-	Local $top1 = $top
-	Local $guiHeight = $Height
-	Local $iPosition, $dNum
+	Local $hide = 1
+	Local $iPosition
 	Local $guiHeightxrow = 55
 
-	$vListItem = GUICtrlRead($List1)
+	;Read the keys and its values in the ini file.
+	;Read the fields of an account.
+	Local $aNewFieldsSect = IniReadSection($settingfile, $accountName)
 
-	If $vListItem = "" Then Return
-
-	;Read the keys and its values
-	Local $aReadSect = IniReadSection($settingfile, $vListItem)
-
-	$aLabel = $aReadSect[0][0]
-	$aInput = $aReadSect[0][0]
+	$aLabel = $aNewFieldsSect[0][0]
+	$aInput = $aNewFieldsSect[0][0]
 
 	;calcolo altezza gui complessiva
-	Local $iNum = UBound($aReadSect)
-	Local $dNum = $iNum -1
+	Local $iNum = UBound($aNewFieldsSect) ; Numero di campi totali
 
 	;Bug fix UI
-	If $dNum > 3 Then
-		$guiHeightxrow *= $dNum
-		$guiHeight = $guiHeightxrow + 40
+	If ($iNum - 1) > 3 Then
+		$guiHeightxrow *= ($iNum - 1)
+		$Height = $guiHeightxrow + 40
 	EndIf
 
 	Local $aLabel[$iNum]
 	Local $aInput[$iNum]
 
 	If $sh = 1 Then
-		For $i = 1 To $dNum
-			$iPosition = StringInStr($aReadSect[$i][1], "0x")
+		For $i = 1 To $iNum - 1
+			$iPosition = StringInStr($aNewFieldsSect[$i][1], "0x")
 			If $iPosition = 1 Then
-				$aReadSect[$i][1] = StringEncrypt(False, $aReadSect[$i][1], $g_hKey)
+				$aNewFieldsSect[$i][1] = StringEncrypt(False, $aNewFieldsSect[$i][1], $g_hKey)
 			EndIf
 		Next
 		$sh = 0
 		$hide = 0
 	EndIf
 
-	If $sh = "" Then $ReadRecGUI = GUICreate($vListItem, 585, $guiHeight, -1, -1, -1, BitOR($WS_EX_TOPMOST,$WS_EX_WINDOWEDGE), $MainUI)
+	If $sh = "" Then $ReadRecGUI = GUICreate($accountName, 585, $Height, -1, -1, -1, BitOR($WS_EX_TOPMOST,$WS_EX_WINDOWEDGE), $MainUI)
 
-	;Ridimensionamento GUI in base alla quantità di record esistenti
-	For $i = 1 To $dNum
-		$aLabel[$i] = GUICtrlCreateLabel(($aReadSect[$i][0]), $left, $top1, 489, 24)
-;~ 		GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
-		GUICtrlSetColor(-1, 0x0066CC)
-		$top1 += 24
-		$aInput[$i] = GUICtrlCreateInput(($aReadSect[$i][1]), $left, $top1, 489, 21)
-		$top1 += 24
-	Next
+	For $i = 1 To $iNum - 1
+
+        ; Calcolo l'offset Y [($i - 1) * 48].
+        Local $iOffsetY = ($i - 1) * 48
+
+        ; Posizione Label: $top + offset calcolato
+        $aLabel[$i] = GUICtrlCreateLabel(($aNewFieldsSect[$i][0]), $left, $top + $iOffsetY, 489, 24)
+        GUICtrlSetColor(-1, 0x0066CC)
+
+        ; Posizione Input: $top + offset calcolato + 24
+        $aInput[$i] = GUICtrlCreateInput(($aNewFieldsSect[$i][1]), $left, $top + $iOffsetY + 24, 489, 21)
+    Next
 
 	Local $copyToClip = GUICtrlCreateButton("Copia", 520, 24, 49, 49, $BS_ICON)
 	GUICtrlSetTip($copyToClip, "Copy the password on clipboard")
@@ -225,9 +247,9 @@ Func ReadFields() ;Leggi records
 	Local $show = GUICtrlCreateButton("Mostra", 520, 87, 49, 49, $BS_ICON)
 	GUICtrlSetTip($show, "Show the Crypt records")
 
-	$remButton = GUICtrlCreateButton("Remove account", 336, $guiHeight - 52, 113, 41)
-	$cancelButton = GUICtrlCreateButton("Close", 456, $guiHeight - 52, 113, 41)
-	$addNewField = GUICtrlCreateButton("Add Records", 216, $guiHeight - 52, 113, 41)
+	$remButton = GUICtrlCreateButton("Remove account", 336, $Height - 52, 113, 41)
+	$cancelButton = GUICtrlCreateButton("Close", 456, $Height - 52, 113, 41)
+	$addNewField = GUICtrlCreateButton("Add Records", 216, $Height - 52, 113, 41)
 
 	GUISetState(@SW_SHOW, $ReadRecGUI)
 
@@ -238,13 +260,13 @@ Func ReadFields() ;Leggi records
 				ExitLoop
 
 			Case $copyToClip
-				_clippa($aReadSect[3][1])
+				Clippa($aNewFieldsSect[3][1])
 				TrayTip($name, "Password copied!", 1)
 
 			Case $addNewField
 				GUISetState(@SW_HIDE, $ReadRecGUI)
-				AddField()
-				ReadFields() ;Aggiorno la GUI per visualizzare le nuove voci
+				AddField($accountName)
+				ReadFields($accountName) ;Aggiorno la GUI per visualizzare le nuove voci
 				ExitLoop
 
 			Case $show ;pulsante Mostra
@@ -252,11 +274,11 @@ Func ReadFields() ;Leggi records
 				;      evitando cosi di nascondere la finestra e riaprirla eseguendo codice non necessario.
 				If $hide = 1 Then $sh = 1
 				GUISetState(@SW_HIDE, $ReadRecGUI)
-				ReadFields() ;Update GUI
+				ReadFields($accountName) ;Update GUI
 				ExitLoop ;non esce dal loop in questa maniera
 
 			Case $remButton
-				RemoveAccount($vListItem)
+				RemoveAccount($accountName)
 				ExitLoop
 		EndSwitch
 	WEnd
@@ -285,20 +307,24 @@ Func RemoveAccount($account) ;Rimuovi accounts
 	Select
 		Case $iMsgBoxAnswer = 6 ;Yes
 			IniDelete($settingfile, $account)
-			UpdateList()
 			TrayTip($name, $account & " Account Removed!", 1)
 			Return
 		Case $iMsgBoxAnswer = 7 ;No
 			Return
 	EndSelect
-
 EndFunc
+
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: WriteField
-; Description ...: Write fields of the account
-; Syntax ........: WriteField()
-; Parameters ....:
+; Description ...: Write a new field on an account
+; Syntax ........: WriteField($firstTitle, $secondTitle, $firstValue, $secondValue)
+; Parameters ....: $firstTitle          - a string point value.
+;                  $secondTitle         - a string value.
+;                  $firstValue          - a string point value.
+;                  $secondValue         - a string value.
+;                  $bCrypt1		        - a boolean value.
+;                  $bCrypt2		        - a boolean value.
 ; Return values .: None
 ; Author ........: Jyukat
 ; Modified ......:
@@ -307,55 +333,54 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func WriteField() ;Scrivi records
+Func WriteField($account, $firstTitle, $secondTitle, $firstValue, $secondValue, $bCrypt1, $bCrypt2)
+	; array size, first field, second field, first value, second value
+	Local Enum $NARRAY, $FIELD1, $FIELD2, $VALUE1, $VALUE2
+	Local $aNewFields[5]
 
-	Local $vEn1, $vEn2
+	$aNewFields[$NARRAY] = UBound($aNewFields)	 ;Numero dimensioni array
+	$aNewFields[$FIELD1] = $firstTitle			 ;Legge il Nome del Record 1
+	$aNewFields[$FIELD2] = $secondTitle			 ;Legge il Nome del Record 2
+	$aNewFields[$VALUE1] = $firstValue			 ;Legge il Valore del Record 1
+	$aNewFields[$VALUE2] = $secondValue			 ;Legge il Valore del Record 2
 
-	$aRead[$NARRAY] = UBound($aRead)                ;Numero dimensioni array
-	$aRead[$FIELD1] = GUICtrlRead($recName)         ;Legge il Nome del Record 1
-	$aRead[$FIELD2] = GUICtrlRead($recName1)        ;Legge il Nome del Record 2
-	$aRead[$VALUE1] = GUICtrlRead($recValue)        ;Legge il Valore del Record 1
-	$aRead[$VALUE2] = GUICtrlRead($recValue1)       ;Legge il Valore del Record 2
+	ConsoleWrite($aNewFields[$NARRAY])
 
 	;Controllo se il primo campo sia stato inserito, se così non fosse termino la funzione
-	If $aRead[$FIELD1] = "" Or $aRead[$FIELD1] = "Insert the record name" Then Return
+	If $aNewFields[$FIELD1] = "" Or $aNewFields[$FIELD1] = "Insert the record name" Then Return -1
 
 	;Controllo se è presente un valore da inserire diverso dal testo di Default
-	If $aRead[$VALUE1] = "" Or $aRead[$VALUE1] = "Insert the record" Then
-		MsgBox(48, "", "A valid value has not been entered for the record")
-		Return
+	If $aNewFields[$VALUE1] = "" Or $aNewFields[$VALUE1] = "Insert the record" Then
+		MsgBox(48, "", "Enter a valid value !")
+		Return -1
 	EndIf
 
 	;Controllo se devo criptare il primo valore altrimenti lo scrivo in chiaro
-	If _IsChecked($Checkbox1) Then
-		$vEn1 = StringEncrypt(True, $aRead[$VALUE1], $g_hKey)
-		IniWrite($settingfile, $vListItem, $aRead[$FIELD1], $vEn1)
-
+	If $bCrypt1 Then
+		Local $vEn1 = StringEncrypt(True, $aNewFields[$VALUE1], $g_hKey)
+		IniWrite($settingfile, $account, $aNewFields[$FIELD1], $vEn1)
 	Else
-		IniWrite($settingfile, $vListItem, $aRead[$FIELD1], $aRead[$VALUE1])
+		IniWrite($settingfile, $account, $aNewFields[$FIELD1], $aNewFields[$VALUE1])
 	EndIf
 
 	;Controllo se il secondo campo sia stato inserito, se così non fosse termino la funzione
-	If $aRead[$FIELD2] = "" Or $aRead[$FIELD2] = "Insert the record name" Then
+	If $aNewFields[$FIELD2] = "" Or $aNewFields[$FIELD2] = "Insert the record name" Then
 		MsgBox(64, "Nice", "Data added successfully!", "", $MB_TOPMOST)
 		Return
 	EndIf
 
 	;Controllo se è presente un valore da inserire diverso dal testo di Default
-	If $aRead[$VALUE2] = "" Or $aRead[$VALUE2] = "Insert the record" Then
+	If $aNewFields[$VALUE2] = "" Or $aNewFields[$VALUE2] = "Insert the record" Then
 		MsgBox(48, "", "A valid value has not been entered for the record #2", "", $MB_TOPMOST)
 		Return
 	EndIf
 
 	;Controllo se devo criptare il secondo valore altrimenti lo scrivo in chiaro
-	If _IsChecked($Checkbox2) Then
-		$vEn2 = StringEncrypt(True, $aRead[$VALUE2], $g_hKey)
-		IniWrite($settingfile, $vListItem, $aRead[$FIELD2], $vEn2)
-
+	If $bCrypt2 Then
+		Local $vEn2 = StringEncrypt(True, $aNewFields[$VALUE2], $g_hKey)
+		IniWrite($settingfile, $account, $aNewFields[$FIELD2], $vEn2)
 	Else
-		IniWrite($settingfile, $vListItem, $aRead[$FIELD2], $aRead[$VALUE2])
+		IniWrite($settingfile, $account, $aNewFields[$FIELD2], $aNewFields[$VALUE2])
 	EndIf
 
-	MsgBox(64, "Nice", "Data added successfully!", "", $MB_TOPMOST)
-
-EndFunc   ;==>WriteField
+EndFunc
