@@ -39,4 +39,4 @@ CLICK HERE [RELEASE](https://github.com/Jyukat/Open-Password-Manager/releases).
 Open Password Manager is distributed under the [GPL 3.0 License](LICENSE).
 
 ---
-Jyukat aka hacktooth
+Giuseppe Catania - Jyukat
