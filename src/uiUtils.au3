@@ -25,9 +25,12 @@ Func PasswordGeneratorUI()
 	$BTN_generate = GUICtrlCreateButton("Generate", 352, 8, 57, 25)
 	$BTN_copy = GUICtrlCreateButton("Copy", 416, 8, 33, 25)
 	$input_password = GUICtrlCreateInput("", 8, 8, 281, 25, $ES_READONLY)
-	$input_n = GUICtrlCreateInput("8", 296, 8, 40, 25, $ES_NUMBER)
+	GUICtrlSetBkColor(-1, 0xFFBB20)
+	$input_n = GUICtrlCreateInput("12", 296, 8, 40, 25, $ES_NUMBER)
 	$hUpdown = GUICtrlCreateUpdown($input_n)
-	GUICtrlSetLimit($hUpdown, 12, 64) ; to limit the entry to 64 chars
+	GUICtrlSetLimit($hUpdown, 64, 12) ; to limit the entry to 64 chars
+
+	GUICtrlSetData($input_password, _RandomString(GUICtrlRead($input_n)))
 
 	GUISetState(@SW_SHOW, $PassGenUI)
 
@@ -36,12 +39,20 @@ Func PasswordGeneratorUI()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE
 				GUISwitch($MainUI)
-			ExitLoop
-		Case $BTN_copy
-			ClipPut(GUICtrlRead($input_password))
+				ExitLoop
+
+			Case $BTN_copy
+				ClipPut(GUICtrlRead($input_password))
+
 			Case $BTN_generate
 				GUICtrlSetData($input_password, _RandomString(GUICtrlRead($input_n)))
+
 			Case $input_n
+				If GUICtrlRead($input_n) > 15 Then
+					GUICtrlSetBkColor($input_password, 0x00EB50)
+				Else
+					GUICtrlSetBkColor($input_password, 0xFFBB20)
+				EndIf
 				GUICtrlSetData($input_password, _RandomString(GUICtrlRead($input_n)))
 		EndSwitch
 	WEnd
@@ -64,13 +75,17 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func UpdateList($hList)
-	GUICtrlSetData($hList, "") ; Flush List
+	_GUICtrlListView_DeleteAllItems($hList)
 	$account_list = GetAccountList($settingfile)
-	ConsoleWrite($account_list[0])
 	If Not @error Then
 		For $i = 2 To $account_list[0]
-			GUICtrlSetData($hList, $account_list[$i] & "|")
+			$username = IniRead($settingfile, $account_list[$i],"Username", "")
+			$email = IniRead($settingfile, $account_list[$i],"Email", "")
+			_GUICtrlListView_AddItem($hList, $account_list[$i], 0)
+			_GUICtrlListView_AddSubItem($hList, $i - 2, $username, 1)
+			_GUICtrlListView_AddSubItem($hList, $i - 2, $email, 2)
 		Next
+		_GUICtrlListView_SimpleSort($hList, False, 0, False)
 	Else
 		MsgBox(16, "Error", "Something bad happen.")
 	EndIf

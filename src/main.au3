@@ -52,7 +52,7 @@ Global $exititem 	= 	TrayCreateItem("Exit")
 ;Check if a user file exist
 Do
 	If Not FileExists($settingfile) Then
-		$iMsgBoxAnswer = MsgBox(262196, $name, _
+		$iMsgBoxAnswer = MsgBox(64, $name, _
 								"No account found!" & @CRLF & _
 								"Create a new account or import an existing one." & @CRLF & _
 								"Press YES to create a new user" & @CRLF & _
@@ -130,25 +130,26 @@ While 1
 WEnd
 
 GUIDelete($hLoginUI)
-
 #EndRegion
 
 WinMain()
 
 Func WinMain()
-	$MainUI		 =	 GUICreate("Welcome " & $username, 350, 420, -1, -1)
+	$MainUI		 =	 GUICreate("Welcome " & $username, 490, 420, -1, -1)
 	$Menu		 =	 GUICtrlCreateMenu("&Menù")
 	$new		 =	 GUICtrlCreateMenuItem("Add account" & @TAB & "Ctrl+N", $Menu)
 	$passGen	 =	 GUICtrlCreateMenuItem("Password Generator" & @TAB & "Ctrl+1", $Menu)
 	$settings	 =	 GUICtrlCreateMenuItem("Settings" & @TAB & "Ctrl+Space", $Menu)
 	$about		 =	 GUICtrlCreateMenuItem("About", $Menu)
-	$List		 =	 GUICtrlCreateList("", 5, 5, 340, 320)
-	; TODO
-	; sostituire List con ListView per una visualizzazione dei dati migliore
-	; stile migliore e funzioni avanzate
-	; _GUICtrlListView_BeginUpdate
-	; _GUICtrlListView_SortItems
-	GUICtrlSetData(-1, "")
+;~ 	$List		 =	 GUICtrlCreateList("", 5, 5, 340, 320)
+	$List = _GUICtrlListView_Create($MainUI, "", 2, 2, 480, 320)
+	_GUICtrlListView_SetExtendedListViewStyle($List, $LVS_EX_FULLROWSELECT)
+
+	; Add columns
+	_GUICtrlListView_InsertColumn($List, 0, "Name", 160)
+	_GUICtrlListView_InsertColumn($List, 1, "Username", 160)
+	_GUICtrlListView_InsertColumn($List, 2, "Email", 160)
+
 	GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
 
 	$addRec	= GUICtrlCreateButton("Add Record", 220, 344, 120, 33)
@@ -178,8 +179,8 @@ Func WinMain()
 			Case $backUp
 				Backup()
 			Case $List
-				ReadFields(GUICtrlRead($List))
-				UpdateList($List)
+;~ 				ReadFields(GUICtrlRead($List))
+;~ 				UpdateList($List)
             EndSwitch
 
 		Local $msg = TrayGetMsg()
