@@ -7,6 +7,50 @@
 
 #include-once
 
+Func ListView_Get_Selected_Item()
+	Local $itemText
+	Local $selectedIndex = _GUICtrlListView_GetNextItem($ListView)
+	If $selectedIndex <> -1 Then
+		$itemText = _GUICtrlListView_GetItemText($ListView, $selectedIndex, 0)
+		ConsoleWrite($itemText)
+		Return $itemText
+	Else
+		Return $itemText = ""
+	EndIf
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: WM_NOTIFY
+; Description ...: Notify windows message
+; Syntax ........: WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
+; Parameters ....: $hWnd                - a handle value.
+;                  $iMsg                - an integer value.
+;                  $wParam              - an unknown value.
+;                  $lParam              - an unknown value.
+; Return values .: None
+; Author ........: None - WinAPI
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
+	#forceref $hWnd, $iMsg, $wParam
+	Local $tNMHDR = DllStructCreate($tagNMHDR, $lParam)
+	Local $hWndFrom = HWnd(DllStructGetData($tNMHDR, "hWndFrom"))
+	Local $iCode = DllStructGetData($tNMHDR, "Code")
+	If $hWndFrom = GUICtrlGetHandle($ListView) Then
+		Switch $iCode
+			Case $NM_DBLCLK ; Doppio click
+				;bug here
+;~ 				ReadFields(ListView_Get_Selected_Item())
+;~ 				UpdateList()
+		EndSwitch
+	EndIf
+	Return $GUI_RUNDEFMSG
+EndFunc
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: PasswordGeneratorUI
 ; Description ...: minimal Password Generator UI
@@ -74,18 +118,18 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func UpdateList($hList)
-	_GUICtrlListView_DeleteAllItems($hList)
+Func UpdateList()
+	_GUICtrlListView_DeleteAllItems($ListView)
 	$account_list = GetAccountList($settingfile)
 	If Not @error Then
 		For $i = 2 To $account_list[0]
 			$username = IniRead($settingfile, $account_list[$i],"Username", "")
 			$email = IniRead($settingfile, $account_list[$i],"Email", "")
-			_GUICtrlListView_AddItem($hList, $account_list[$i], 0)
-			_GUICtrlListView_AddSubItem($hList, $i - 2, $username, 1)
-			_GUICtrlListView_AddSubItem($hList, $i - 2, $email, 2)
+			_GUICtrlListView_AddItem($ListView, $account_list[$i], 0)
+			_GUICtrlListView_AddSubItem($ListView, $i - 2, $username, 1)
+			_GUICtrlListView_AddSubItem($ListView, $i - 2, $email, 2)
 		Next
-		_GUICtrlListView_SimpleSort($hList, False, 0, False)
+		_GUICtrlListView_SimpleSort($ListView, False, 0, False)
 	Else
 		MsgBox(16, "Error", "Something bad happen.")
 	EndIf

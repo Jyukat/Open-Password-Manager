@@ -72,6 +72,7 @@ WEnd
 
 ; Gestisce doppio click
 Func WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
+	#forceref $hWnd, $iMsg, $wParam
     Local $tNMHDR = DllStructCreate($tagNMHDR, $lParam)
     Local $hWndFrom = HWnd(DllStructGetData($tNMHDR, "hWndFrom"))
     Local $iCode = DllStructGetData($tNMHDR, "Code")

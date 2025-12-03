@@ -28,7 +28,7 @@ Opt("TrayMenuMode", 1) ; Enable tray menu
 
 #region Global variables and constants
 Global $username, $stored_salt, $g_hKey
-Global $loginUI, $MainUI, $ReadRecGUI, $sh, $hide
+Global $loginUI, $MainUI, $ReadRecGUI, $ListView, $sh, $hide
 
 Global Const $settingfile	 = 		@LocalAppDataDir & "\OPMtest\config.ini"
 Global Const $sInitDir		 = 		"::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
@@ -89,7 +89,6 @@ GUICtrlSetCursor	(-1, 0)
 GUISetFont(10, 700, 0, "Segoe UI")
 $btnabout	 =	 GUICtrlCreateButton("About", 16, 238, 217, 25)
 
-
 GUISetState(@SW_SHOW, $hLoginUI)
 
 While 1
@@ -137,18 +136,17 @@ WinMain()
 Func WinMain()
 	$MainUI		 =	 GUICreate("Welcome " & $username, 490, 420, -1, -1)
 	$Menu		 =	 GUICtrlCreateMenu("&Menù")
-	$new		 =	 GUICtrlCreateMenuItem("Add account" & @TAB & "Ctrl+N", $Menu)
-	$passGen	 =	 GUICtrlCreateMenuItem("Password Generator" & @TAB & "Ctrl+1", $Menu)
-	$settings	 =	 GUICtrlCreateMenuItem("Settings" & @TAB & "Ctrl+Space", $Menu)
-	$about		 =	 GUICtrlCreateMenuItem("About", $Menu)
-;~ 	$List		 =	 GUICtrlCreateList("", 5, 5, 340, 320)
-	$List = _GUICtrlListView_Create($MainUI, "", 2, 2, 480, 320)
-	_GUICtrlListView_SetExtendedListViewStyle($List, $LVS_EX_FULLROWSELECT)
+	$New		 =	 GUICtrlCreateMenuItem("Add account" & @TAB & "Ctrl+N", $Menu)
+	$PassGen	 =	 GUICtrlCreateMenuItem("Password Generator" & @TAB & "Ctrl+1", $Menu)
+	$Settings	 =	 GUICtrlCreateMenuItem("Settings" & @TAB & "Ctrl+Space", $Menu)
+	$About		 =	 GUICtrlCreateMenuItem("About", $Menu)
+	$ListView	 = 	 GUICtrlCreateListView("", 2, 2, 485, 320)
+	_GUICtrlListView_SetExtendedListViewStyle($ListView, $LVS_EX_FULLROWSELECT + $LVS_EX_DOUBLEBUFFER)
 
 	; Add columns
-	_GUICtrlListView_InsertColumn($List, 0, "Name", 160)
-	_GUICtrlListView_InsertColumn($List, 1, "Username", 160)
-	_GUICtrlListView_InsertColumn($List, 2, "Email", 160)
+	_GUICtrlListView_InsertColumn($ListView, 0, "Name", 160)
+	_GUICtrlListView_InsertColumn($ListView, 1, "Username", 160)
+	_GUICtrlListView_InsertColumn($ListView, 2, "Email", 160)
 
 	GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
 
@@ -158,40 +156,70 @@ Func WinMain()
 	$backUp	= GUICtrlCreateButton("Backup", 16, 344, 120, 33)
 	GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
 
-	UpdateList($List) ;popola la lista
+	UpdateList() ;popola la lista
+
+	; Crea menu contestuale
+	Global $ContextMenu = GUICtrlCreateContextMenu($ListView)
+	Global $MenuItem_Open = GUICtrlCreateMenuItem("Open", $ContextMenu)
+	Global $MenuItem_Modify = GUICtrlCreateMenuItem("Add Fields", $ContextMenu)
+	GUICtrlCreateMenuItem("", $ContextMenu) ; Separatore
+	Global $MenuItem_Copy = GUICtrlCreateMenuItem("Copy Password", $ContextMenu)
+	GUICtrlCreateMenuItem("", $ContextMenu) ; Separatore
+	Global $MenuItem_Delete = GUICtrlCreateMenuItem("Delete Account", $ContextMenu)
 
 	GUISetState(@SW_SHOW, $MainUI)
+	GUIRegisterMsg($WM_NOTIFY, "WM_NOTIFY") ; Double Click Message
 
 	While 1
 		$nMsg = GUIGetMsg()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE
 				Quit()
-			Case $new, $addRec
+
+			Case $MenuItem_Open
+				ReadFields(ListView_Get_Selected_Item())
+				UpdateList()
+
+			Case $MenuItem_Modify
+				AddField(ListView_Get_Selected_Item())
+
+			Case $MenuItem_Copy
+				$accountSelected = IniReadSection($settingfile, ListView_Get_Selected_Item())
+				$password = $accountSelected[3][1] ; $accountSelected[3][1] Account Password field
+				Clippa($password)
+				$password = Null
+
+			Case $MenuItem_Delete
+				RemoveAccount(ListView_Get_Selected_Item())
+				UpdateList()
+
+			Case $New, $addRec
 				NewAccountUI()
-				UpdateList($List)
-			Case $passGen
+				UpdateList()
+
+			Case $PassGen
 				PasswordGeneratorUI()
-			Case $settings
+
+			Case $Settings
 				SettingUI()
-			Case $about
+
+			Case $About
 				About()
+
 			Case $backUp
 				Backup()
-			Case $List
-;~ 				ReadFields(GUICtrlRead($List))
-;~ 				UpdateList($List)
-            EndSwitch
+
+		EndSwitch
 
 		Local $msg = TrayGetMsg()
-			Select
-				Case $msg = $restore
-					GUISetState(@SW_SHOW, $MainUI)
-				Case $msg = $exititem
-					Quit()
-				Case $msg = $reboot
-					Reboot()
-			EndSelect
+		Select
+			Case $msg = $restore
+				GUISetState(@SW_SHOW, $MainUI)
+			Case $msg = $exititem
+				Quit()
+			Case $msg = $reboot
+				Reboot()
+		EndSelect
 	WEnd
 
 EndFunc
