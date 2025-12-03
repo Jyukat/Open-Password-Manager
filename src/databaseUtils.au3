@@ -301,7 +301,7 @@ EndFunc   ;==>ReadFields
 ; ===============================================================================================================================
 Func RemoveAccount($account) ;Rimuovi accounts
 	If Not IsDeclared("iMsgBoxAnswer") Then Local $iMsgBoxAnswer
-	$iMsgBoxAnswer = MsgBox(262452,"","Are you sure? : ")
+	$iMsgBoxAnswer = MsgBox(262452,"","Are you sure?")
 	Select
 		Case $iMsgBoxAnswer = 6 ;Yes
 			IniDelete($settingfile, $account)

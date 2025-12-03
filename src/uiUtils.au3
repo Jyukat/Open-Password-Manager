@@ -43,9 +43,8 @@ Func WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
 	If $hWndFrom = GUICtrlGetHandle($ListView) Then
 		Switch $iCode
 			Case $NM_DBLCLK ; Doppio click
-				;bug here
-;~ 				ReadFields(ListView_Get_Selected_Item())
-;~ 				UpdateList()
+                Local $iIndex = ListView_Get_Selected_Item()
+                GUICtrlSendToDummy($g_hDummy, $iIndex)
 		EndSwitch
 	EndIf
 	Return $GUI_RUNDEFMSG

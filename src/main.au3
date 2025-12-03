@@ -36,6 +36,8 @@ Global Const $name			 = 		"Open Password Manager"
 Global Const $tempFolder	 = 		@TempDir & "\"
 Global Const $trayico		 = 		TraySetIcon(@ScriptFullPath, 201)
 
+; Dummy Control using in WinMain() to handle DoubleClick without any Freeze
+Global $g_hDummy
 Global $Height = 220, $top = 16, $left = 16
 
 Global $restore 	= 	TrayCreateItem("Show window")
@@ -141,6 +143,8 @@ Func WinMain()
 	$Settings	 =	 GUICtrlCreateMenuItem("Settings" & @TAB & "Ctrl+Space", $Menu)
 	$About		 =	 GUICtrlCreateMenuItem("About", $Menu)
 	$ListView	 = 	 GUICtrlCreateListView("", 2, 2, 485, 320)
+	$g_hDummy	 =	 GUICtrlCreateDummy()
+
 	_GUICtrlListView_SetExtendedListViewStyle($ListView, $LVS_EX_FULLROWSELECT + $LVS_EX_DOUBLEBUFFER)
 
 	; Add columns
@@ -175,6 +179,11 @@ Func WinMain()
 		Switch $nMsg
 			Case $GUI_EVENT_CLOSE
 				Quit()
+
+			Case $g_hDummy
+				Local $iSelectedItem = GUICtrlRead($g_hDummy)
+				ReadFields($iSelectedItem)
+				UpdateList()
 
 			Case $MenuItem_Open
 				ReadFields(ListView_Get_Selected_Item())
