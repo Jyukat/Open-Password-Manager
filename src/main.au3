@@ -1,10 +1,27 @@
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Outfile=..\Release\AutoIt Password Manager x86.exe
+#AutoIt3Wrapper_Outfile_x64=..\Release\AutoIt Password Manager x64.exe
+#AutoIt3Wrapper_Compression=4
+#AutoIt3Wrapper_UseUpx=y
+#AutoIt3Wrapper_Compile_Both=y
+#AutoIt3Wrapper_UseX64=y
+#AutoIt3Wrapper_Res_Comment=A simple Password manager written in pure AutoIt v3
+#AutoIt3Wrapper_Res_Description=A simple Password manager written in pure AutoIt v3
+#AutoIt3Wrapper_Res_ProductName=Autoit Password Manager
+#AutoIt3Wrapper_Res_CompanyName=Jyukat
+#AutoIt3Wrapper_Res_LegalCopyright=Giuseppe Catania - Jyukat
+#AutoIt3Wrapper_Res_SaveSource=y
+#AutoIt3Wrapper_Res_HiDpi=Y
+#Tidy_Parameters=/gd
+#AutoIt3Wrapper_Run_Au3Stripper=y
+#Au3Stripper_Parameters=/sf /sv /rm
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+
 ; ===============================================================================================================================
 ;
 ; AutoIt v3 - Password manager by Jyukat
 ;
 ; ===============================================================================================================================
-
-#AutoIt3Wrapper_Res_HiDpi=Y ;HiDpi
 
 #include <Crypt.au3>
 #include <File.au3>
@@ -30,7 +47,7 @@ Opt("TrayMenuMode", 1) ; Enable tray menu
 Global $username, $stored_salt, $g_hKey
 Global $loginUI, $MainUI, $ReadRecGUI, $ListView, $sh, $hide
 
-Global Const $settingfile	 = 		@LocalAppDataDir & "\OPMtest\config.ini"
+Global Const $settingfile	 = 		@LocalAppDataDir & "\OPM\config.ini"
 Global Const $sInitDir		 = 		"::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
 Global Const $name			 = 		"Open Password Manager"
 Global Const $tempFolder	 = 		@TempDir & "\"
@@ -51,14 +68,14 @@ Global $exititem 	= 	TrayCreateItem("Exit")
 #include "clipUtils.au3"
 #include "uiUtils.au3"
 
-;Check if a user file exist
+;Check if a user exist
 Do
 	If Not FileExists($settingfile) Then
-		$iMsgBoxAnswer = MsgBox(64, $name, _
-								"No account found!" & @CRLF & _
-								"Create a new account or import an existing one." & @CRLF & _
-								"Press YES to create a new user" & @CRLF & _
-								"Press NO to import a configuration file")
+		If Not IsDeclared("iMsgBoxAnswer") Then Local $iMsgBoxAnswer
+		$iMsgBoxAnswer = MsgBox(36, $name,  "No account found!" & @CRLF & _
+											"Create a new account or import an existing one." & @CRLF & _
+											"Press YES to create a new user" & @CRLF & _
+											"Press NO to import a configuration file")
 		Select
 			Case $iMsgBoxAnswer = 6 ;Yes
 				SignInWindow()
@@ -136,6 +153,8 @@ GUIDelete($hLoginUI)
 WinMain()
 
 Func WinMain()
+	Local $accountSelected
+
 	$MainUI		 =	 GUICreate("Welcome " & $username, 490, 420, -1, -1)
 	$Menu		 =	 GUICtrlCreateMenu("&Menù")
 	$New		 =	 GUICtrlCreateMenuItem("&Add new account", $Menu)
@@ -165,15 +184,15 @@ Func WinMain()
 	UpdateList() ;popola la lista
 
 	; Crea menu contestuale
-	Local $ContextMenu = GUICtrlCreateContextMenu($ListView)
-	Local $MenuItem_Open = GUICtrlCreateMenuItem("Open", $ContextMenu)
-	Local $MenuItem_Modify = GUICtrlCreateMenuItem("Add Fields", $ContextMenu)
+	Local $ContextMenu			 = GUICtrlCreateContextMenu($ListView)
+	Local $MenuItem_Open		 = GUICtrlCreateMenuItem("Open", $ContextMenu)
+	Local $MenuItem_Modify		 = GUICtrlCreateMenuItem("Add Fields", $ContextMenu)
 	GUICtrlCreateMenuItem("", $ContextMenu) ; Separatore
-	Local $MenuItem_Copy = GUICtrlCreateMenuItem("Copy UserName", $ContextMenu)
-	Local $MenuItem_Copy = GUICtrlCreateMenuItem("Copy Password", $ContextMenu)
-	Local $MenuItem_Copy = GUICtrlCreateMenuItem("Copy Email", $ContextMenu)
+	Local $MenuItem_CopyUser	 = GUICtrlCreateMenuItem("Copy UserName", $ContextMenu)
+	Local $MenuItem_CopyPass	 = GUICtrlCreateMenuItem("Copy Password", $ContextMenu)
+	Local $MenuItem_CopyEmail	 = GUICtrlCreateMenuItem("Copy Email", $ContextMenu)
 	GUICtrlCreateMenuItem("", $ContextMenu) ; Separatore
-	Local $MenuItem_Delete = GUICtrlCreateMenuItem("Delete Account", $ContextMenu)
+	Local $MenuItem_Delete		 = GUICtrlCreateMenuItem("Delete Account", $ContextMenu)
 
 	GUISetState(@SW_SHOW, $MainUI)
 	GUIRegisterMsg($WM_NOTIFY, "WM_NOTIFY") ; Double Click Message
@@ -196,7 +215,17 @@ Func WinMain()
 			Case $MenuItem_Modify
 				AddField(ListView_Get_Selected_Item())
 
-			Case $MenuItem_Copy
+			Case $MenuItem_CopyUser
+				$accountSelected = IniReadSection($settingfile, ListView_Get_Selected_Item())
+				Local $User = $accountSelected[1][1]
+				ClipPut($User)
+
+			Case $MenuItem_CopyEmail
+				$accountSelected = IniReadSection($settingfile, ListView_Get_Selected_Item())
+				Local $Email = $accountSelected[2][1]
+				ClipPut($Email)
+
+			Case $MenuItem_CopyPass
 				$accountSelected = IniReadSection($settingfile, ListView_Get_Selected_Item())
 				$password = $accountSelected[3][1] ; $accountSelected[3][1] Account Password field
 				Clippa($password)
