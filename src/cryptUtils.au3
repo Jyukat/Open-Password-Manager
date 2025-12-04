@@ -49,19 +49,15 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func StringEncrypt($bEncrypt, $sData, $hkey)
-	Local $data = ""
-
-	If $sData == "" Then Return
-
+Func StringEncrypt($bEncrypt, $sData, $hKey)
+	If $sData == "" Then Return $sData
 	If $bEncrypt Then
-		$data = _Crypt_EncryptData($sData, $hkey, $CALG_USERKEY)
+		$sData = _Crypt_EncryptData($sData, $hKey, $CALG_USERKEY)
 	Else
-		$data = BinaryToString(_Crypt_DecryptData($sData, $hkey, $CALG_USERKEY))
+		$sData = BinaryToString(_Crypt_DecryptData($sData, $hKey, $CALG_USERKEY))
 	EndIf
-
-	Return $data
-EndFunc   ;==>StringEncrypt
+	Return $sData
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _RandomString
