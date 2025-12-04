@@ -1,7 +1,8 @@
 # Open Password Manager
 
 ## WARNING
-**Open Password Manager is not 100% safe, so use it with your own risk.**
+**Open Password Manager is not 100% safe like other similar software, so use it with your own risk.**
+**I don't have no resposability of any trouble you can make using it**
 
 ## Description
 Open Password Manager is an open-source password manager written in AutoIt v3 designed to help you keep your passwords and sensitive information secure. This application allows you to store, organize, and in future generate complex passwords securely.
