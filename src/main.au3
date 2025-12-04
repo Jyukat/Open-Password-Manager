@@ -138,10 +138,12 @@ WinMain()
 Func WinMain()
 	$MainUI		 =	 GUICreate("Welcome " & $username, 490, 420, -1, -1)
 	$Menu		 =	 GUICtrlCreateMenu("&Menù")
-	$New		 =	 GUICtrlCreateMenuItem("Add account" & @TAB & "Ctrl+N", $Menu)
-	$PassGen	 =	 GUICtrlCreateMenuItem("Password Generator" & @TAB & "Ctrl+1", $Menu)
-	$Settings	 =	 GUICtrlCreateMenuItem("Settings" & @TAB & "Ctrl+Space", $Menu)
-	$About		 =	 GUICtrlCreateMenuItem("About", $Menu)
+	$New		 =	 GUICtrlCreateMenuItem("&Add new account", $Menu)
+	$tools		 =	 GUICtrlCreateMenu("&Tools")
+	$PassGen	 =	 GUICtrlCreateMenuItem("&Password Generator", $tools)
+	$Settings	 =	 GUICtrlCreateMenuItem("&Settings", $Menu)
+					 GUICtrlCreateMenuItem("", $Menu) ; Separatore
+	$About		 =	 GUICtrlCreateMenuItem("&About", $Menu)
 	$ListView	 = 	 GUICtrlCreateListView("", 2, 2, 485, 320)
 	$g_hDummy	 =	 GUICtrlCreateDummy()
 
@@ -154,22 +156,24 @@ Func WinMain()
 
 	GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
 
-	$addRec	= GUICtrlCreateButton("Add Record", 220, 344, 120, 33)
+	$addRec	= GUICtrlCreateButton("Add Record", 374, 344, 100, 30)
 	GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
 
-	$backUp	= GUICtrlCreateButton("Backup", 16, 344, 120, 33)
+	$backUp	= GUICtrlCreateButton("Backup", 16, 344, 100, 30)
 	GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
 
 	UpdateList() ;popola la lista
 
 	; Crea menu contestuale
-	Global $ContextMenu = GUICtrlCreateContextMenu($ListView)
-	Global $MenuItem_Open = GUICtrlCreateMenuItem("Open", $ContextMenu)
-	Global $MenuItem_Modify = GUICtrlCreateMenuItem("Add Fields", $ContextMenu)
+	Local $ContextMenu = GUICtrlCreateContextMenu($ListView)
+	Local $MenuItem_Open = GUICtrlCreateMenuItem("Open", $ContextMenu)
+	Local $MenuItem_Modify = GUICtrlCreateMenuItem("Add Fields", $ContextMenu)
 	GUICtrlCreateMenuItem("", $ContextMenu) ; Separatore
-	Global $MenuItem_Copy = GUICtrlCreateMenuItem("Copy Password", $ContextMenu)
+	Local $MenuItem_Copy = GUICtrlCreateMenuItem("Copy UserName", $ContextMenu)
+	Local $MenuItem_Copy = GUICtrlCreateMenuItem("Copy Password", $ContextMenu)
+	Local $MenuItem_Copy = GUICtrlCreateMenuItem("Copy Email", $ContextMenu)
 	GUICtrlCreateMenuItem("", $ContextMenu) ; Separatore
-	Global $MenuItem_Delete = GUICtrlCreateMenuItem("Delete Account", $ContextMenu)
+	Local $MenuItem_Delete = GUICtrlCreateMenuItem("Delete Account", $ContextMenu)
 
 	GUISetState(@SW_SHOW, $MainUI)
 	GUIRegisterMsg($WM_NOTIFY, "WM_NOTIFY") ; Double Click Message

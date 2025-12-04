@@ -20,37 +20,36 @@
 ; Example .......: No
 ; ===============================================================================================================================
 Func NewAccountUI()
-	$hNewAccountGUI = GUICreate("New Account", 514, 330, -1, -1, Null, Null, $MainUI)
+	$hNewAccountGUI = GUICreate("New Account", 436, 258, -1, -1)
 	GUISetFont(10, 400, 0, "Segoe UI")
 
-	$Group1 = GUICtrlCreateGroup("Account Details", 16, 8, 481, 305)
-	$Label10 = GUICtrlCreateLabel("Account name :", 48, 48, 110, 25)
+	$Group1 = GUICtrlCreateGroup("Account Details", 8, 8, 417, 240, BitOR($GUI_SS_DEFAULT_GROUP,$BS_CENTER))
+	$Label10 = GUICtrlCreateLabel("Account name :", 16, 32, 110, 25)
 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
 
-	$sAccount = GUICtrlCreateInput("", 160, 48, 305, 25)
-	$Label11 = GUICtrlCreateLabel("Email :", 109, 96, 50, 25)
+	$sAccount = GUICtrlCreateInput("", 128, 32, 289, 25)
+	$Label11 = GUICtrlCreateLabel("Email :", 77, 64, 50, 25)
 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
 
-	$sEmail = GUICtrlCreateInput("", 160, 96, 305, 25)
-	$Label12 = GUICtrlCreateLabel("Username :", 76, 144, 82, 25)
+	$sEmail = GUICtrlCreateInput("", 128, 64, 289, 25)
+	$Label12 = GUICtrlCreateLabel("Username :", 44, 96, 82, 25)
 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
 
-	$sUser = GUICtrlCreateInput("", 160, 144, 305, 25)
-	$Label13 = GUICtrlCreateLabel("Password :", 81, 192, 78, 25)
+	$sUser = GUICtrlCreateInput("", 128, 96, 289, 25)
+	$Label13 = GUICtrlCreateLabel("Password :", 49, 128, 78, 25)
 	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
 	GUICtrlSetColor(-1, 0x0066CC)
 
-	$sPass = GUICtrlCreateInput("", 160, 192, 305, 25, BitOR($GUI_SS_DEFAULT_INPUT, $ES_PASSWORD))
-	$btn_cancel = GUICtrlCreateButton("Cancel", 336, 264, 129, 33)
-	$btn_confirm = GUICtrlCreateButton("Confirm", 192, 264, 129, 33)
-	GUICtrlCreateGroup("", -99, -99, 1, 1)
-
-	$tip = GUICtrlCreateLabel("To create other records you must register these required fields.", 44, 232, 440, 25)
-	GUISetFont(10, 400, 0, "Segoe UI")
+	$sPass = GUICtrlCreateInput("", 128, 128, 289, 25, BitOR($GUI_SS_DEFAULT_INPUT,$ES_PASSWORD))
+	$tip = GUICtrlCreateLabel("To create other records you must register these required fields.", 20, 208, 392, 25, $SS_CENTER)
 	GUICtrlSetColor(-1, 0xFF0000)
+
+	GUICtrlCreateGroup("", -99, -99, 1, 1)
+	$btn_cancel = GUICtrlCreateButton("Cancel", 328, 168, 89, 25)
+	$btn_confirm = GUICtrlCreateButton("Confirm", 128, 168, 89, 25)
 
 	GUISetState(@SW_SHOW, $hNewAccountGUI)
 
