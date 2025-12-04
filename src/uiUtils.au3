@@ -1,12 +1,24 @@
 ; ===============================================================================================================================
 ;
 ; AutoIt v3 - Password manager by Jyukat
-; Modified in 21/11/2025
 ;
 ; ===============================================================================================================================
 
 #include-once
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: ListView_Get_Selected_Item
+; Description ...: Retrive the first item on the row selected
+; Syntax ........: ListView_Get_Selected_Item()
+; Parameters ....: None
+; Return values .: $itemText		- a string value.
+; Author ........: Jyukat
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func ListView_Get_Selected_Item()
 	Local $itemText
 	Local $selectedIndex = _GUICtrlListView_GetNextItem($ListView)
@@ -42,7 +54,7 @@ Func WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
 	Local $iCode = DllStructGetData($tNMHDR, "Code")
 	If $hWndFrom = GUICtrlGetHandle($ListView) Then
 		Switch $iCode
-			Case $NM_DBLCLK ; Doppio click
+			Case $NM_DBLCLK ; Double click
                 Local $iIndex = ListView_Get_Selected_Item()
                 GUICtrlSendToDummy($g_hDummy, $iIndex)
 		EndSwitch
@@ -64,14 +76,15 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func PasswordGeneratorUI()
-	$PassGenUI = GUICreate("Password Generator", 456, 43, -1, -1, -1, BitOR($WS_EX_TOOLWINDOW,$WS_EX_WINDOWEDGE), $MainUI)
+	$PassGenUI = GUICreate("Password Generator", 456, 43, -1, -1, -1, BitOR($WS_EX_TOOLWINDOW,$WS_EX_WINDOWEDGE, $WS_EX_TOPMOST), $MainUI)
+	GUICtrlSetBkColor(-1, 0x202020)
 	$BTN_generate = GUICtrlCreateButton("Generate", 352, 8, 57, 25)
 	$BTN_copy = GUICtrlCreateButton("Copy", 416, 8, 33, 25)
-	$input_password = GUICtrlCreateInput("", 8, 8, 281, 25, $ES_READONLY)
+	$input_password = GUICtrlCreateInput("", 8, 8, 281, 25, $ES_READONLY + $ES_CENTER)
 	GUICtrlSetBkColor(-1, 0xFFBB20)
 	$input_n = GUICtrlCreateInput("12", 296, 8, 40, 25, $ES_NUMBER)
 	$hUpdown = GUICtrlCreateUpdown($input_n)
-	GUICtrlSetLimit($hUpdown, 64, 12) ; to limit the entry to 64 chars
+	GUICtrlSetLimit($hUpdown, 64, 12) ; to limit the length max to 64 chars and min at 12 chars
 
 	GUICtrlSetData($input_password, _RandomString(GUICtrlRead($input_n)))
 
@@ -257,41 +270,46 @@ EndFunc   ;==>_IsChecked
 ; Example .......: No
 ; ===============================================================================================================================
 Func About() ;About
-Local $iOldOpt = Opt("GUICoordMode", 1)
+	$AboutUI = GUICreate("Open Password Manager", 425, 434, -1, -1, -1, -1)
+	$Label1 = GUICtrlCreateLabel("Open Password Manager", 8, 8, 179, 25)
+	GUICtrlSetFont(-1, 12, 400, 0, "Segoe UI")
+	$Label2 = GUICtrlCreateLabel("Stable Version", 8, 32, 72, 17)
+	$Tab1 = GUICtrlCreateTab(8, 64, 409, 361)
+	$TabInfo = GUICtrlCreateTabItem("Info")
+	$Info = GUICtrlCreateEdit("", 12, 273, 401, 145, $ES_READONLY)
 
-Local $aboutUI = GUICreate("About", 480, 146, 192, -1, -1, $WS_EX_TOOLWINDOW)
-$appnamelb = GUICtrlCreateLabel("Open Password Manager", 224, 8, 256, 32)
-GUICtrlSetFont(-1, 16, 400, 0, "Segoe UI")
+	GUICtrlSetData(-1, "Windows Version : " & @OSVersion & @CRLF,1)
+	GUICtrlSetData(-1, "Windows Build : " & @OSBuild & @CRLF,1)
+	GUICtrlSetData(-1, "-------------------------------" & @CRLF,1)
+	GUICtrlSetData(-1, "Computer Name : " & @ComputerName & @CRLF,1)
+	GUICtrlSetData(-1, "CPU architecture : " & @CPUArch & @CRLF,1)
+	GUICtrlSetData(-1, "AutoIt Version : " & @AutoItVersion & @CRLF,1)
+	GUICtrlSetData(-1, "AutoIt x64 : " & @AutoItX64 & @CRLF,1)
+	GUICtrlSetData(-1, "-------------------------------" & @CRLF,1)
+	GUICtrlSetData(-1, "Executable Path : " & @AutoItExe & @CRLF,1)
+	GUICtrlSetData(-1, "Process identifier (PID) : " & @AutoItPID & @CRLF,1)
 
-$createdbylb = GUICtrlCreateLabel("Created by Giuseppe Catania 'Jyukat'", 144, 48, 268, 19)
-GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
+	$Label3 = GUICtrlCreateLabel("Author : Giuseppe 'Jyukat' Catania", 20, 97, 166, 17)
+	$Label4 = GUICtrlCreateLabel("AutoIt Version : " & @AutoItVersion, 20, 121, 160, 17)
+	$Label5 = GUICtrlCreateLabel("GitHub : https://github.com/Jyukat/Open-Password-Manager", 20, 145, 342, 17)
+			  GUICtrlSetColor	(-1, 0x0066CC)
+			  GUICtrlSetCursor	(-1, 0)
+	$Label6 = GUICtrlCreateLabel("Why? : Too boored too poor to pay for a Password manager service :(", 20, 169, 342, 17)
+	$Label7 = GUICtrlCreateLabel("Consider to Donate some coffee or biscuits to support this software !", 20, 193, 352, 17)
+	$Input1 = GUICtrlCreateInput("bc1q47p3q7um7u0eptjx6f30rlxmjxqqmhx8hpmstg", 28, 233, 369, 21, $ES_READONLY + $ES_CENTER)
+	$Group1 = GUICtrlCreateGroup("Bitcoin address", 16, 216, 393, 49)
+	GUICtrlCreateGroup("", -99, -99, 1, 1)
+	GUISetState(@SW_SHOW,$AboutUI)
 
-$reasonlb = GUICtrlCreateLabel("Reason: too boored too poor to pay any password manager service", 144, 72, 424, 19)
-GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
+	Do
+		$nMsg = GUIGetMsg($AboutUI)
+		Switch $nMsg
+			Case $Label5
+				ShellExecute ("https://github.com/Jyukat/Open-Password-Manager",1)
+		EndSwitch
 
-$sourcecodelb = GUICtrlCreateLabel("Source code available on github.com/Jyukat/Open-Password-Manager", 144, 96, 424, 19)
-GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
+	Until $nMsg = $GUI_EVENT_CLOSE
 
-$Label1 = GUICtrlCreateLabel("Version 0.9b", 504, 120, 76, 19)
-GUICtrlSetFont(-1, 8, 400, 0, "Segoe UI")
-GUISetState(@SW_SHOW, $aboutUI)
-
-While 1
-
-;animations
-For $y = 150 To - 110 Step -0.5
-	GUICtrlSetPos($appnamelb, 224, $y)
-	GUICtrlSetPos($createdbylb, 144, $y + 40)
-	GUICtrlSetPos($reasonlb, 144, $y + 64)
-	GUICtrlSetPos($sourcecodelb, 144, $y + 88)
-	Sleep(10)
-	If GUIGetMsg() == $GUI_EVENT_CLOSE Then ExitLoop 2
-next
-Sleep (1000)
-WEnd
-
-Opt("GUICoordMode", $iOldOpt)
-
-GUIDelete($aboutUI)
+	GUIDelete($aboutUI)
 
 EndFunc
